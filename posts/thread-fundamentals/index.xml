@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Multithreading Fundamentals on Java Multithreading Notes</title>
+    <link>http://localhost:1313/posts/thread-fundamentals/</link>
+    <description>Recent content in Multithreading Fundamentals on Java Multithreading Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/thread-fundamentals/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Thread Inheritance</title>
+      <link>http://localhost:1313/posts/thread-fundamentals/thread-creation/thread-inheritance/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/thread-fundamentals/thread-creation/thread-inheritance/</guid>
+      <description>&lt;h1 id=&#34;thread-creation---part-2-thread-inheritance&#34;&gt;Thread Creation - Part 2: Thread Inheritance&lt;/h1&gt;
+&lt;h2 id=&#34;1-the-concept-extending-the-thread-class&#34;&gt;1. The Concept: Extending the Thread Class&lt;/h2&gt;
+&lt;p&gt;Instead of passing a &lt;code&gt;Runnable&lt;/code&gt; object to a new Thread instance, we create a specialized class that &lt;strong&gt;is&lt;/strong&gt; a Thread. This is done using the &lt;code&gt;extends&lt;/code&gt; keyword.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Mechanism:&lt;/strong&gt; Create a subclass of &lt;code&gt;Thread&lt;/code&gt; and override the &lt;code&gt;run()&lt;/code&gt; method.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Usage:&lt;/strong&gt; You instantiate your subclass and call &lt;code&gt;.start()&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-the-golden-snippet-inheritance-pattern&#34;&gt;2. The &amp;ldquo;Golden&amp;rdquo; Snippet (Inheritance Pattern)&lt;/h2&gt;
+&lt;p&gt;This approach encapsulates the thread logic and the data it needs into a single object.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Introduction</title>
+      <link>http://localhost:1313/posts/thread-fundamentals/thread-creation/thread-introduction/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/thread-fundamentals/thread-creation/thread-introduction/</guid>
+      <description>&lt;h1 id=&#34;thread-creation-part-1-capabilites--debugging&#34;&gt;Thread Creation Part 1 Capabilites &amp;amp; Debugging&lt;/h1&gt;
+&lt;h2 id=&#34;1-core-concept-thread-vs-process&#34;&gt;1. Core Concept: Thread vs. Process&lt;/h2&gt;
+&lt;p&gt;Before diving into code, it is vital to understand the &amp;ldquo;Container&amp;rdquo; relationship:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Process:&lt;/strong&gt; An instance of a running program. It has its own memory space (Heap, Stack, etc.).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Thread:&lt;/strong&gt; A unit of execution within a process. Multiple threads share the same &lt;strong&gt;Heap&lt;/strong&gt; but have their own &lt;strong&gt;Stack&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-thread-capabilities&#34;&gt;2. Thread Capabilities&lt;/h2&gt;
+&lt;p&gt;Threads allow us to perform multiple tasks concurrently. Key capabilities include:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

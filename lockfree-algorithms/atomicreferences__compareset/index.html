@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Atomic References &amp; Lock-Free Data Structures | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object.
+AtomicReference allows you to swap an entire object reference atomically. It says: &ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.&rdquo;
+2. Comparison: Synchronized Object vs. AtomicReference
+
+  
+      
+          Feature
+          synchronized (obj)
+          AtomicReference&lt;T&gt;
+      
+  
+  
+      
+          Safety
+          Prevents multiple threads from entering.
+          Prevents &ldquo;stale&rdquo; updates via CAS.
+      
+      
+          Blocking
+          Yes (Threads sleep).
+          No (Threads &ldquo;spin&rdquo; and retry).
+      
+      
+          Granularity
+          Locks the whole block of code.
+          Only protects the reference (the pointer).
+      
+      
+          Performance
+          High overhead for small updates.
+          Extremely fast for &ldquo;pointer swapping.&rdquo;
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: A Lock-Free Stack
+A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the &ldquo;Head&rdquo; of the stack without any locks.">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Atomic References & Lock-Free Data Structures">
+  <meta property="og:description" content="1. The “Why” If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object. AtomicReference allows you to swap an entire object reference atomically. It says: “Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.”
+2. Comparison: Synchronized Object vs. AtomicReference Feature synchronized (obj) AtomicReference&lt;T&gt; Safety Prevents multiple threads from entering. Prevents “stale” updates via CAS. Blocking Yes (Threads sleep). No (Threads “spin” and retry). Granularity Locks the whole block of code. Only protects the reference (the pointer). Performance High overhead for small updates. Extremely fast for “pointer swapping.” 3. The “Golden” Snippet: A Lock-Free Stack A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the “Head” of the stack without any locks.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="lockfree-algorithms">
+    <meta property="article:published_time" content="2026-03-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-27T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Atomic References & Lock-Free Data Structures">
+  <meta name="twitter:description" content="1. The “Why” If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object. AtomicReference allows you to swap an entire object reference atomically. It says: “Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.”
+2. Comparison: Synchronized Object vs. AtomicReference Feature synchronized (obj) AtomicReference&lt;T&gt; Safety Prevents multiple threads from entering. Prevents “stale” updates via CAS. Blocking Yes (Threads sleep). No (Threads “spin” and retry). Granularity Locks the whole block of code. Only protects the reference (the pointer). Performance High overhead for small updates. Extremely fast for “pointer swapping.” 3. The “Golden” Snippet: A Lock-Free Stack A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the “Head” of the stack without any locks.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "LockFree Algorithms \u0026 Data Structures",
+      "item": "https://Aayush987.github.io/lockfree-algorithms/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Atomic References \u0026 Lock-Free Data Structures",
+      "item": "https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Atomic References \u0026 Lock-Free Data Structures",
+  "name": "Atomic References \u0026 Lock-Free Data Structures",
+  "description": "1. The \u0026ldquo;Why\u0026rdquo; If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object. AtomicReference allows you to swap an entire object reference atomically. It says: \u0026ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.\u0026rdquo;\n2. Comparison: Synchronized Object vs. AtomicReference Feature synchronized (obj) AtomicReference\u0026lt;T\u0026gt; Safety Prevents multiple threads from entering. Prevents \u0026ldquo;stale\u0026rdquo; updates via CAS. Blocking Yes (Threads sleep). No (Threads \u0026ldquo;spin\u0026rdquo; and retry). Granularity Locks the whole block of code. Only protects the reference (the pointer). Performance High overhead for small updates. Extremely fast for \u0026ldquo;pointer swapping.\u0026rdquo; 3. The \u0026ldquo;Golden\u0026rdquo; Snippet: A Lock-Free Stack A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the \u0026ldquo;Head\u0026rdquo; of the stack without any locks.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "1. The “Why” If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object. AtomicReference allows you to swap an entire object reference atomically. It says: “Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.”\n2. Comparison: Synchronized Object vs. AtomicReference Feature synchronized (obj) AtomicReference Safety Prevents multiple threads from entering. Prevents “stale” updates via CAS. Blocking Yes (Threads sleep). No (Threads “spin” and retry). Granularity Locks the whole block of code. Only protects the reference (the pointer). Performance High overhead for small updates. Extremely fast for “pointer swapping.” 3. The “Golden” Snippet: A Lock-Free Stack A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the “Head” of the stack without any locks.\nimport java.util.concurrent.atomic.AtomicReference; public class LockFreeStack\u003cT\u003e { private static class Node\u003cT\u003e { T value; Node\u003cT\u003e next; Node(T value) { this.value = value; } } // AtomicReference holds the current \"Top\" of the stack private AtomicReference\u003cNode\u003cT\u003e\u003e head = new AtomicReference\u003c\u003e(); public void push(T value) { Node\u003cT\u003e newNode = new Node\u003c\u003e(value); Node\u003cT\u003e currentHead; do { currentHead = head.get(); // 1. Get current top newNode.next = currentHead; // 2. Link new node to current top // 3. TRY to set new node as the head. // If another thread pushed/popped in the meantime, CAS fails. } while (!head.compareAndSet(currentHead, newNode)); } public T pop() { Node\u003cT\u003e currentHead; Node\u003cT\u003e nextNode; do { currentHead = head.get(); if (currentHead == null) return null; // Stack is empty nextNode = currentHead.next; // TRY to move the head to the next node } while (!head.compareAndSet(currentHead, nextNode)); return currentHead.value; } } Code Explanation: The Reference: The head is an AtomicReference to a Node. It represents the “entrance” to our stack. The Optimistic Push: We assume the head won’t change while we are preparing our new node. We point our newNode.next to what we think is the current head. The CAS Check: head.compareAndSet(currentHead, newNode) checks: “Is the head still the same one I saw in step 1?” If Yes: The pointer is swapped to our new node instantly. If No: Someone else pushed a node! Our newNode.next is now pointing to a “stale” head. We loop back, get the new head, and try again. Example Output: Thread-1: Starting Push(\"A\") Thread-2: Starting Push(\"B\") Thread-2: Successfully set Head to \"B\". Thread-1: CAS Failed (Head is now B, not null). Thread-1: Retrying... Successfully set Head to \"A\" (pointing to B). Final Stack: [A] -\u003e [B] -\u003e null 4. The Gotchas The ABA Problem: This is the biggest risk with AtomicReference. If Thread A sees value V1, then Thread B changes it to V2 and back to V1, Thread A’s CAS will succeed even though the state changed. The Fix: Use AtomicStampedReference, which adds a “version number” or “stamp” to the reference. Memory Pressure: Lock-free structures often create many short-lived objects (like Node objects) because every failed CAS might require a new object. This puts more work on the Garbage Collector. Side Effects: Never perform a “side effect” (like printing to a console or writing to a file) inside the do-while loop of a CAS operation. Since the loop can run many times, the side effect will also happen many times! ",
+  "wordCount" : "555",
+  "inLanguage": "en",
+  "datePublished": "2026-03-27T00:00:00Z",
+  "dateModified": "2026-03-27T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Atomic References &amp; Lock-Free Data Structures
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>If you want to update a complex object (like a <code>User</code> profile or a <code>Node</code> in a list) across multiple threads, you usually have to lock the entire object.
+<strong>AtomicReference</strong> allows you to swap an entire object reference atomically. It says: &ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.&rdquo;</p>
+<h3 id="2-comparison-synchronized-object-vs-atomicreference">2. Comparison: Synchronized Object vs. AtomicReference<a hidden class="anchor" aria-hidden="true" href="#2-comparison-synchronized-object-vs-atomicreference">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>synchronized (obj)</code></th>
+          <th style="text-align: left"><code>AtomicReference&lt;T&gt;</code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Safety</strong></td>
+          <td style="text-align: left">Prevents multiple threads from entering.</td>
+          <td style="text-align: left">Prevents &ldquo;stale&rdquo; updates via CAS.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Blocking</strong></td>
+          <td style="text-align: left">Yes (Threads sleep).</td>
+          <td style="text-align: left">No (Threads &ldquo;spin&rdquo; and retry).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Granularity</strong></td>
+          <td style="text-align: left">Locks the whole block of code.</td>
+          <td style="text-align: left">Only protects the <em>reference</em> (the pointer).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Performance</strong></td>
+          <td style="text-align: left">High overhead for small updates.</td>
+          <td style="text-align: left">Extremely fast for &ldquo;pointer swapping.&rdquo;</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-a-lock-free-stack">3. The &ldquo;Golden&rdquo; Snippet: A Lock-Free Stack<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-a-lock-free-stack">#</a></h3>
+<p>A standard <code>Stack</code> uses <code>synchronized</code> on <code>push</code> and <code>pop</code>. In this high-performance version, we use <code>AtomicReference</code> to manage the &ldquo;Head&rdquo; of the stack without any locks.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.atomic.AtomicReference;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LockFreeStack</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>        T value;
+</span></span><span style="display:flex;"><span>        Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> next;
+</span></span><span style="display:flex;"><span>        Node(T value) { <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> value; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// AtomicReference holds the current &#34;Top&#34; of the stack</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> AtomicReference<span style="color:#f92672">&lt;</span>Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;&gt;</span> head <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicReference<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">push</span>(T value) {
+</span></span><span style="display:flex;"><span>        Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> newNode <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Node<span style="color:#f92672">&lt;&gt;</span>(value);
+</span></span><span style="display:flex;"><span>        Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> currentHead;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>            currentHead <span style="color:#f92672">=</span> head.<span style="color:#a6e22e">get</span>();     <span style="color:#75715e">// 1. Get current top</span>
+</span></span><span style="display:flex;"><span>            newNode.<span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> currentHead;   <span style="color:#75715e">// 2. Link new node to current top</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 3. TRY to set new node as the head.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// If another thread pushed/popped in the meantime, CAS fails.</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>head.<span style="color:#a6e22e">compareAndSet</span>(currentHead, newNode));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> T <span style="color:#a6e22e">pop</span>() {
+</span></span><span style="display:flex;"><span>        Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> currentHead;
+</span></span><span style="display:flex;"><span>        Node<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> nextNode;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>            currentHead <span style="color:#f92672">=</span> head.<span style="color:#a6e22e">get</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (currentHead <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>; <span style="color:#75715e">// Stack is empty</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            nextNode <span style="color:#f92672">=</span> currentHead.<span style="color:#a6e22e">next</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// TRY to move the head to the next node</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>head.<span style="color:#a6e22e">compareAndSet</span>(currentHead, nextNode));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> currentHead.<span style="color:#a6e22e">value</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong>The Reference</strong>: The <code>head</code> is an <code>AtomicReference</code> to a <code>Node</code>. It represents the &ldquo;entrance&rdquo; to our stack.</li>
+<li><strong>The Optimistic Push</strong>: We <em>assume</em> the head won&rsquo;t change while we are preparing our new node. We point our <code>newNode.next</code> to what we <em>think</em> is the current head.</li>
+<li><strong>The CAS Check</strong>: <code>head.compareAndSet(currentHead, newNode)</code> checks: &ldquo;Is the head still the same one I saw in step 1?&rdquo;
+<ul>
+<li>If <strong>Yes</strong>: The pointer is swapped to our new node instantly.</li>
+<li>If <strong>No</strong>: Someone else pushed a node! Our <code>newNode.next</code> is now pointing to a &ldquo;stale&rdquo; head. We loop back, get the <em>new</em> head, and try again.</li>
+</ul>
+</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Thread-1: Starting Push(&#34;A&#34;)
+</span></span><span style="display:flex;"><span>Thread-2: Starting Push(&#34;B&#34;)
+</span></span><span style="display:flex;"><span>Thread-2: Successfully set Head to &#34;B&#34;.
+</span></span><span style="display:flex;"><span>Thread-1: CAS Failed (Head is now B, not null). 
+</span></span><span style="display:flex;"><span>Thread-1: Retrying... Successfully set Head to &#34;A&#34; (pointing to B).
+</span></span><span style="display:flex;"><span>Final Stack: [A] -&gt; [B] -&gt; null
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The ABA Problem:</strong> This is the biggest risk with <code>AtomicReference</code>. If Thread A sees value <code>V1</code>, then Thread B changes it to <code>V2</code> and back to <code>V1</code>, Thread A’s CAS will succeed even though the state changed.
+<ul>
+<li><strong>The Fix:</strong> Use <code>AtomicStampedReference</code>, which adds a &ldquo;version number&rdquo; or &ldquo;stamp&rdquo; to the reference.</li>
+</ul>
+</li>
+<li><strong>Memory Pressure:</strong> Lock-free structures often create many short-lived objects (like <code>Node</code> objects) because every failed CAS might require a new object. This puts more work on the Garbage Collector.</li>
+<li><strong>Side Effects:</strong> Never perform a &ldquo;side effect&rdquo; (like printing to a console or writing to a file) inside the <code>do-while</code> loop of a CAS operation. Since the loop can run many times, the side effect will also happen many times!</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

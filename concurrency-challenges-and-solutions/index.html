@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Concurrency Challenges &amp; Solutions | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="Concurrency Challenges &amp; Solutions - Study Notes">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/concurrency-challenges-and-solutions/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Concurrency Challenges & Solutions">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Concurrency Challenges & Solutions">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Concurrency Challenges \u0026 Solutions",
+      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Concurrency Challenges &amp; Solutions
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Atomic Operations, Volatile, &amp; Metrics
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” Traditional locking (synchronized) is “heavy.” It involves suspending threads, context switching, and OS overhead. Atomic Operations allow us to perform “Read-Modify-Write” cycles as a single, uninterruptible unit at the hardware level. The volatile keyword ensures that changes made by one thread are immediately visible to others, preventing “stale data” bugs caused by CPU caching.
+2. Comparison: Volatile vs. Atomic vs. Synchronized Feature volatile AtomicInteger / AtomicLong synchronized Visibility Yes (Guarantees fresh data). Yes (Guarantees fresh data). Yes (Guarantees fresh data). Atomicity No (Doesn’t fix count&#43;&#43;). Yes (Fixes count&#43;&#43;). Yes (Fixes count&#43;&#43;). Locking Lock-free. Lock-free (uses CAS). Blocking (uses Locks). Performance Extremely High. High. Medium/Low. 3. The “Golden” Snippet: Performance Metrics Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Atomic Operations, Volatile, & Metrics" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Critical Section &amp; Synchronization
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” We need a way to make a sequence of operations Atomic (all-or-nothing). Since the CPU can interrupt a thread at any micro-instruction, we use Mutual Exclusion (Mutex). This ensures that if Thread A is halfway through an update, Thread B is physically blocked from starting that same update until Thread A finishes.
+2. Visual Logic: The Monitor/Lock Concept In Java, every Object has a built-in “Monitor” (or Intrinsic Lock). Think of it like a bathroom with a single key:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Critical Section & Synchronization" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Deep Dive- Synchronization in Action
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” We use synchronization to prevent Data Corruption. Without it, two threads can “read” the same initial value, perform an operation, and “write” back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).
+2. Detailed Code Explanation Let’s look at a common pattern: The Thread-Safe Counter.
+public class Counter { private int count = 0; // The &#39;synchronized&#39; keyword tells Java: // &#34;Only one thread can enter this method at a time using this specific object&#39;s lock.&#34; public synchronized void increment() { // Step 1: Read &#39;count&#39; from Memory // Step 2: Add 1 // Step 3: Write &#39;count&#39; back to Memory this.count&#43;&#43;; } public synchronized int getCount() { return this.count; } } How the JVM executes this: The Lock Acquisition: When Thread A calls increment(), it looks at the Counter object. Every object in Java has a Monitor. Thread A “grabs” the monitor. The Exclusion: While Thread A is inside increment(), Thread B tries to call increment(). The JVM sees that Thread A holds the monitor. Thread B is put into a BLOCKED state (it stops executing and waits). The Memory Barrier: When Thread A finishes, it “releases” the monitor. Crucially, it also flushes its changes to the Main Memory (Heap) so other threads can see the updated value. The Hand-off: The JVM wakes up Thread B. Thread B now acquires the monitor and sees the updated value left by Thread A. 3. Finer-Grained Synchronization (The Block) Sometimes, synchronizing an entire method is overkill. If your method is 100 lines long, but only 1 line touches the shared variable, you should use a Synchronized Block.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Deep Dive- Synchronization in Action" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Locking Strategies &amp; Deadlocks
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.
+2. Comparison: Coarse-Grained vs. Fine-Grained Locking Feature Coarse-Grained Fine-Grained Simplicity High (One lock for everything). Low (Many locks to manage). Performance Low (Threads queue up unnecessarily). High (Threads only block if using the same resource). Risk of Deadlock Zero (You can’t deadlock with one lock). High (Requires strict discipline). Example synchronized(database) lockTableA, lockTableB 3. The “Golden” Snippet: The Deadlock Trap In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Locking Strategies & Deadlocks" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Race Conditions vs. Data Races
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” A Race Condition is a flaw in the timing or ordering of events that leads to incorrect program behavior. A Data Race is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.
+You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid both.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Race Conditions vs. Data Races" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">The 4 Conditions for Deadlock (Coffman’s Conditions)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. Mutual Exclusion Only one thread can have exclusive access to a resource at any given time. If a second thread tries to access that resource, it must wait until the first thread releases it.
+The Problem: If resources were sharable (like a Read-Only file), there would be no waiting and no deadlock. 2. Hold and Wait A thread is already holding at least one resource and is waiting to acquire additional resources that are currently being held by other threads.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to The 4 Conditions for Deadlock (Coffman’s Conditions)" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

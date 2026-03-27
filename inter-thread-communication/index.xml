@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Inter Thread Coordination on Study Notes</title>
+    <link>https://Aayush987.github.io/inter-thread-communication/</link>
+    <description>Recent content in Inter Thread Coordination on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://Aayush987.github.io/inter-thread-communication/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Condition Variables - Inter-Thread Communication</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/condition_variables/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/condition_variables/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Sometimes a thread has the lock but cannot proceed because the data isn&amp;rsquo;t ready (e.g., a Consumer finds an empty queue).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If the thread just loops (&lt;code&gt;while(queue.isEmpty());&lt;/code&gt;), it wastes 100% of the CPU.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Solution:&lt;/strong&gt; The thread &amp;ldquo;waits&amp;rdquo; on a condition. This &lt;strong&gt;releases the lock&lt;/strong&gt; and puts the thread to sleep. When another thread makes the condition true, it &amp;ldquo;signals&amp;rdquo; (notifies) the sleeping thread to wake up and try again.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-object&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Object&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;Object.wait/notify&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;java.util.concurrent.Condition&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Association&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Every Java Object has one.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Associated with a &lt;code&gt;ReentrantLock&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Capability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only one &amp;ldquo;wait set&amp;rdquo; per object.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Multiple&lt;/strong&gt; conditions per lock (e.g., &lt;code&gt;notFull&lt;/code&gt; and &lt;code&gt;notEmpty&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Control&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Standard &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Precision control with &lt;code&gt;signal()&lt;/code&gt; and &lt;code&gt;await()&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Analogy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A single waiting room for a whole office.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Multiple specific waiting rooms (e.g., &amp;ldquo;Radiology&amp;rdquo; vs &amp;ldquo;ER&amp;rdquo;).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-multi-condition-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Multi-Condition Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;Using &lt;code&gt;Condition&lt;/code&gt; objects with &lt;code&gt;ReentrantLock&lt;/code&gt; allows us to be very specific about &lt;em&gt;which&lt;/em&gt; threads we wake up.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Objects as Condition Variables - wait, notify, &amp; notifyAll</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Every Java object has an &lt;strong&gt;Intrinsic Lock&lt;/strong&gt; (the monitor). Along with that lock, every object maintains a &lt;strong&gt;Wait Set&lt;/strong&gt;—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-objects&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Objects&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;wait()&lt;/code&gt; / &lt;code&gt;notify()&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;Condition&lt;/code&gt; (&lt;code&gt;await/signal&lt;/code&gt;)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Origin&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Part of &lt;code&gt;java.lang.Object&lt;/code&gt; (Available since JDK 1.0).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Part of &lt;code&gt;java.util.concurrent&lt;/code&gt; (Added in JDK 1.5).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Locking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Works with &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Works with &lt;code&gt;ReentrantLock&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Wait Sets&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only &lt;strong&gt;one&lt;/strong&gt; per object.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Multiple&lt;/strong&gt; per lock (e.g., &lt;code&gt;notFull&lt;/code&gt;, &lt;code&gt;notEmpty&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Efficiency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;notifyAll()&lt;/code&gt; wakes &lt;em&gt;everyone&lt;/em&gt;, even if they can&amp;rsquo;t proceed.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;signal()&lt;/code&gt; can target specific groups of threads.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-classic-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Classic Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;In this version, we don&amp;rsquo;t need a &lt;code&gt;ReentrantLock&lt;/code&gt;. We use the &lt;code&gt;synchronized&lt;/code&gt; keyword and the shared object itself to coordinate.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Semaphore - Scalable Producer-Consumer</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/semaphore/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/semaphore/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;A standard &lt;code&gt;Mutex&lt;/code&gt; or &lt;code&gt;synchronized&lt;/code&gt; block only allows &lt;strong&gt;one&lt;/strong&gt; thread at a time. A &lt;strong&gt;Semaphore&lt;/strong&gt;, however, maintains a set of &lt;strong&gt;permits&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It is used to limit the number of concurrent threads accessing a specific resource (e.g., only 5 database connections allowed).&lt;/li&gt;
+&lt;li&gt;In a &lt;strong&gt;Producer-Consumer&lt;/strong&gt; scenario, we use it to signal when &amp;ldquo;Space is Available&amp;rdquo; (for the producer) and when &amp;ldquo;Items are Available&amp;rdquo; (for the consumer).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-mutex-vs-semaphore&#34;&gt;2. Comparison: Mutex vs. Semaphore&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Mutex (or Binary Semaphore)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Counting Semaphore&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Permit Count&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Exactly 1.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;$N$ (User-defined).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Ownership&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only the thread that locked it can unlock it.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;No ownership.&lt;/strong&gt; Any thread can release a permit.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Primary Use&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Protecting a Critical Section (Safety).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Signalling and Resource Throttling (Coordination).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Analogy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A bathroom with one key.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A parking lot with $N$ spots.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-semaphore-based-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Semaphore-Based Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;This implementation uses two semaphores to coordinate a shared buffer. One tracks &amp;ldquo;Full&amp;rdquo; slots and the other tracks &amp;ldquo;Empty&amp;rdquo; slots.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

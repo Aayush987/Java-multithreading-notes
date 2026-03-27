@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Objects as Condition Variables - wait, notify, &amp; notifyAll | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+Every Java object has an Intrinsic Lock (the monitor). Along with that lock, every object maintains a Wait Set—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.
+2. Comparison: wait/notify vs. Condition Objects
+
+  
+      
+          Feature
+          wait() / notify()
+          Condition (await/signal)
+      
+  
+  
+      
+          Origin
+          Part of java.lang.Object (Available since JDK 1.0).
+          Part of java.util.concurrent (Added in JDK 1.5).
+      
+      
+          Locking
+          Works with synchronized blocks.
+          Works with ReentrantLock.
+      
+      
+          Wait Sets
+          Only one per object.
+          Multiple per lock (e.g., notFull, notEmpty).
+      
+      
+          Efficiency
+          notifyAll() wakes everyone, even if they can&rsquo;t proceed.
+          signal() can target specific groups of threads.
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: Classic Producer-Consumer
+In this version, we don&rsquo;t need a ReentrantLock. We use the synchronized keyword and the shared object itself to coordinate.">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Objects as Condition Variables - wait, notify, & notifyAll">
+  <meta property="og:description" content="1. The “Why” Every Java object has an Intrinsic Lock (the monitor). Along with that lock, every object maintains a Wait Set—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.
+2. Comparison: wait/notify vs. Condition Objects Feature wait() / notify() Condition (await/signal) Origin Part of java.lang.Object (Available since JDK 1.0). Part of java.util.concurrent (Added in JDK 1.5). Locking Works with synchronized blocks. Works with ReentrantLock. Wait Sets Only one per object. Multiple per lock (e.g., notFull, notEmpty). Efficiency notifyAll() wakes everyone, even if they can’t proceed. signal() can target specific groups of threads. 3. The “Golden” Snippet: Classic Producer-Consumer In this version, we don’t need a ReentrantLock. We use the synchronized keyword and the shared object itself to coordinate.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="inter-thread-communication">
+    <meta property="article:published_time" content="2026-03-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-27T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Objects as Condition Variables - wait, notify, & notifyAll">
+  <meta name="twitter:description" content="1. The “Why” Every Java object has an Intrinsic Lock (the monitor). Along with that lock, every object maintains a Wait Set—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.
+2. Comparison: wait/notify vs. Condition Objects Feature wait() / notify() Condition (await/signal) Origin Part of java.lang.Object (Available since JDK 1.0). Part of java.util.concurrent (Added in JDK 1.5). Locking Works with synchronized blocks. Works with ReentrantLock. Wait Sets Only one per object. Multiple per lock (e.g., notFull, notEmpty). Efficiency notifyAll() wakes everyone, even if they can’t proceed. signal() can target specific groups of threads. 3. The “Golden” Snippet: Classic Producer-Consumer In this version, we don’t need a ReentrantLock. We use the synchronized keyword and the shared object itself to coordinate.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Inter Thread Coordination",
+      "item": "https://Aayush987.github.io/inter-thread-communication/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Objects as Condition Variables - wait, notify, \u0026 notifyAll",
+      "item": "https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Objects as Condition Variables - wait, notify, \u0026 notifyAll",
+  "name": "Objects as Condition Variables - wait, notify, \u0026 notifyAll",
+  "description": "1. The \u0026ldquo;Why\u0026rdquo; Every Java object has an Intrinsic Lock (the monitor). Along with that lock, every object maintains a Wait Set—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.\n2. Comparison: wait/notify vs. Condition Objects Feature wait() / notify() Condition (await/signal) Origin Part of java.lang.Object (Available since JDK 1.0). Part of java.util.concurrent (Added in JDK 1.5). Locking Works with synchronized blocks. Works with ReentrantLock. Wait Sets Only one per object. Multiple per lock (e.g., notFull, notEmpty). Efficiency notifyAll() wakes everyone, even if they can\u0026rsquo;t proceed. signal() can target specific groups of threads. 3. The \u0026ldquo;Golden\u0026rdquo; Snippet: Classic Producer-Consumer In this version, we don\u0026rsquo;t need a ReentrantLock. We use the synchronized keyword and the shared object itself to coordinate.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "1. The “Why” Every Java object has an Intrinsic Lock (the monitor). Along with that lock, every object maintains a Wait Set—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.\n2. Comparison: wait/notify vs. Condition Objects Feature wait() / notify() Condition (await/signal) Origin Part of java.lang.Object (Available since JDK 1.0). Part of java.util.concurrent (Added in JDK 1.5). Locking Works with synchronized blocks. Works with ReentrantLock. Wait Sets Only one per object. Multiple per lock (e.g., notFull, notEmpty). Efficiency notifyAll() wakes everyone, even if they can’t proceed. signal() can target specific groups of threads. 3. The “Golden” Snippet: Classic Producer-Consumer In this version, we don’t need a ReentrantLock. We use the synchronized keyword and the shared object itself to coordinate.\npublic class ClassicBuffer { private final java.util.Queue\u003cInteger\u003e queue = new java.util.LinkedList\u003c\u003e(); private final int CAPACITY = 5; public synchronized void produce(int item) throws InterruptedException { // 1. Always check the condition in a WHILE loop while (queue.size() == CAPACITY) { // 2. Releases the 'this' lock and sleeps wait(); } queue.add(item); System.out.println(\"Produced: \" + item); // 3. Wake up waiting consumers notifyAll(); } public synchronized int consume() throws InterruptedException { while (queue.isEmpty()) { // Releases the 'this' lock and sleeps wait(); } int item = queue.poll(); System.out.println(\"Consumed: \" + item); // Wake up waiting producers notifyAll(); return item; } } Code Explanation: synchronized: Both methods are synchronized on this. A thread must own the object’s monitor to call wait() or notify(). wait(): When called, the thread is added to the object’s Wait Set and releases the lock. This allows other threads to enter and change the state (e.g., a Consumer to remove an item). notifyAll(): This wakes up all threads currently in the Wait Set. They all move to the “Blocked” state and fight to re-acquire the lock. The Loop: Once a thread re-acquires the lock, it starts right after the wait() call. The while loop ensures it re-checks the condition (e.g., “is the queue still empty?”) before proceeding. Example Output: [Producer]: Queue full. Calling wait()... [Consumer]: Removed item. Calling notifyAll()... [Producer]: Waking up, re-checking while loop, adding item. 4. The Gotchas Spurious Wakeups: Occasionally, a thread wakes up without any notify() being called (a quirk of OS/JVM interaction). This is why a while loop is mandatory, never use an if statement with wait(). The notify() Risk: notify() only wakes up one random thread. If you have multiple Producers and Consumers waiting, notify() might wake up another Producer when the queue is already full, leading to a “Deadlock-like” hang where everyone is sleeping. When in doubt, use notifyAll(). IllegalMonitorStateException: If you call wait() outside of a synchronized block, your code will crash immediately. ",
+  "wordCount" : "468",
+  "inLanguage": "en",
+  "datePublished": "2026-03-27T00:00:00Z",
+  "dateModified": "2026-03-27T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Objects as Condition Variables - wait, notify, &amp; notifyAll
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Every Java object has an <strong>Intrinsic Lock</strong> (the monitor). Along with that lock, every object maintains a <strong>Wait Set</strong>—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.</p>
+<h3 id="2-comparison-waitnotify-vs-condition-objects">2. Comparison: <code>wait/notify</code> vs. <code>Condition</code> Objects<a hidden class="anchor" aria-hidden="true" href="#2-comparison-waitnotify-vs-condition-objects">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>wait()</code> / <code>notify()</code></th>
+          <th style="text-align: left"><code>Condition</code> (<code>await/signal</code>)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Origin</strong></td>
+          <td style="text-align: left">Part of <code>java.lang.Object</code> (Available since JDK 1.0).</td>
+          <td style="text-align: left">Part of <code>java.util.concurrent</code> (Added in JDK 1.5).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Locking</strong></td>
+          <td style="text-align: left">Works with <code>synchronized</code> blocks.</td>
+          <td style="text-align: left">Works with <code>ReentrantLock</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Wait Sets</strong></td>
+          <td style="text-align: left">Only <strong>one</strong> per object.</td>
+          <td style="text-align: left"><strong>Multiple</strong> per lock (e.g., <code>notFull</code>, <code>notEmpty</code>).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Efficiency</strong></td>
+          <td style="text-align: left"><code>notifyAll()</code> wakes <em>everyone</em>, even if they can&rsquo;t proceed.</td>
+          <td style="text-align: left"><code>signal()</code> can target specific groups of threads.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-classic-producer-consumer">3. The &ldquo;Golden&rdquo; Snippet: Classic Producer-Consumer<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-classic-producer-consumer">#</a></h3>
+<p>In this version, we don&rsquo;t need a <code>ReentrantLock</code>. We use the <code>synchronized</code> keyword and the shared object itself to coordinate.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ClassicBuffer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> java.<span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">Queue</span><span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> queue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> java.<span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">LinkedList</span><span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> CAPACITY <span style="color:#f92672">=</span> 5;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">produce</span>(<span style="color:#66d9ef">int</span> item) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 1. Always check the condition in a WHILE loop</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (queue.<span style="color:#a6e22e">size</span>() <span style="color:#f92672">==</span> CAPACITY) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 2. Releases the &#39;this&#39; lock and sleeps</span>
+</span></span><span style="display:flex;"><span>            wait(); 
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        queue.<span style="color:#a6e22e">add</span>(item);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Produced: &#34;</span> <span style="color:#f92672">+</span> item);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 3. Wake up waiting consumers</span>
+</span></span><span style="display:flex;"><span>        notifyAll(); 
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">consume</span>() <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (queue.<span style="color:#a6e22e">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Releases the &#39;this&#39; lock and sleeps</span>
+</span></span><span style="display:flex;"><span>            wait(); 
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> item <span style="color:#f92672">=</span> queue.<span style="color:#a6e22e">poll</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Consumed: &#34;</span> <span style="color:#f92672">+</span> item);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Wake up waiting producers</span>
+</span></span><span style="display:flex;"><span>        notifyAll(); 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> item;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong><code>synchronized</code></strong>: Both methods are synchronized on <code>this</code>. A thread must own the object&rsquo;s monitor to call <code>wait()</code> or <code>notify()</code>.</li>
+<li><strong><code>wait()</code></strong>: When called, the thread is added to the object&rsquo;s Wait Set and <strong>releases the lock</strong>. This allows other threads to enter and change the state (e.g., a Consumer to remove an item).</li>
+<li><strong><code>notifyAll()</code></strong>: This wakes up <strong>all</strong> threads currently in the Wait Set. They all move to the &ldquo;Blocked&rdquo; state and fight to re-acquire the lock.</li>
+<li><strong>The Loop</strong>: Once a thread re-acquires the lock, it starts right after the <code>wait()</code> call. The <code>while</code> loop ensures it re-checks the condition (e.g., &ldquo;is the queue still empty?&rdquo;) before proceeding.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>[Producer]: Queue full. Calling wait()...
+</span></span><span style="display:flex;"><span>[Consumer]: Removed item. Calling notifyAll()...
+</span></span><span style="display:flex;"><span>[Producer]: Waking up, re-checking while loop, adding item.
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>Spurious Wakeups</strong>: Occasionally, a thread wakes up without any <code>notify()</code> being called (a quirk of OS/JVM interaction). This is why a <code>while</code> loop is <strong>mandatory</strong>, never use an <code>if</code> statement with <code>wait()</code>.</li>
+<li><strong>The <code>notify()</code> Risk</strong>: <code>notify()</code> only wakes up <em>one</em> random thread. If you have multiple Producers and Consumers waiting, <code>notify()</code> might wake up another Producer when the queue is already full, leading to a &ldquo;Deadlock-like&rdquo; hang where everyone is sleeping. <strong>When in doubt, use <code>notifyAll()</code>.</strong></li>
+<li><strong>IllegalMonitorStateException</strong>: If you call <code>wait()</code> outside of a <code>synchronized</code> block, your code will crash immediately.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

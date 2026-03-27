@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Virtual Threads and High Performance IOs on Study Notes</title>
+    <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/</link>
+    <description>Recent content in Virtual Threads and High Performance IOs on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://Aayush987.github.io/virtual-threads-and-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>High-Performance IO with Virtual Threads</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
+      <description>&lt;p&gt;This section is the culmination of everything we&amp;rsquo;ve learned about IO. It explains how &lt;strong&gt;Virtual Threads&lt;/strong&gt; allow us to write code that &lt;em&gt;looks&lt;/em&gt; like the old &amp;ldquo;Thread-per-Request&amp;rdquo; model but &lt;em&gt;performs&lt;/em&gt; like the &amp;ldquo;Asynchronous/NIO&amp;rdquo; model.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In the previous NIO (Non-Blocking) models, we had to break our logic into &amp;ldquo;callbacks&amp;rdquo; or &amp;ldquo;promises.&amp;rdquo; This made error handling and stack traces a nightmare.
+Virtual Threads change the game:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Magic:&lt;/strong&gt; When a Virtual Thread performs a blocking IO operation (like &lt;code&gt;socket.read()&lt;/code&gt; or &lt;code&gt;jdbc.executeQuery()&lt;/code&gt;), the underlying JVM &lt;strong&gt;unmounts&lt;/strong&gt; the virtual thread from the physical OS thread (Carrier Thread).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Result:&lt;/strong&gt; The physical OS thread is now free to run &lt;em&gt;another&lt;/em&gt; Virtual Thread while the first one waits for the network. No OS-level context switching occurs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-nio-selectors-vs-virtual-threads&#34;&gt;2. Comparison: NIO (Selectors) vs. Virtual Threads&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;NIO / Netty / Event Loop&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Virtual Threads (Loom)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Code Style&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Asynchronous / Reactive.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Synchronous / Procedural.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Stack Traces&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Often fragmented and useless.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complete and readable.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Debugging&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Difficult (Step-through is hard).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Easy&lt;/strong&gt; (Standard debugger works).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Scalability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Millions of connections).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;High&lt;/strong&gt; (Millions of connections).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Resource Usage&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Low.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-simple-high-scale-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The &amp;ldquo;Simple&amp;rdquo; High-Scale Server&lt;/h3&gt;
+&lt;p&gt;This code looks exactly like a basic blocking server from 20 years ago, but it can handle 1,000,000 concurrent connections on a standard server.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Virtual Threads (Project Loom)</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Until now, we had two choices:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Platform Threads (BIO):&lt;/strong&gt; Easy to write, but expensive. 1,000 threads = 1GB RAM. You run out of memory quickly.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Asynchronous (NIO):&lt;/strong&gt; Scales to millions, but &amp;ldquo;Callback Hell&amp;rdquo; makes it incredibly hard to write, debug, and read.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Virtual Threads&lt;/strong&gt; give you the best of both worlds: You write simple, blocking code (like in the 90s), but the JVM magically handles it like a high-performance Asynchronous system under the hood.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Virtual Threads - Best Practices</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
+      <description>&lt;h3 id=&#34;1-dont-pool-virtual-threads&#34;&gt;1. Don&amp;rsquo;t Pool Virtual Threads&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;The Old Rule:&lt;/strong&gt; Threads are expensive; create a &lt;code&gt;FixedThreadPool&lt;/code&gt; and reuse them.
+&lt;strong&gt;The New Rule:&lt;/strong&gt; Virtual threads are disposable objects. Create a new one for every single task.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Why?&lt;/strong&gt; A pool&amp;rsquo;s purpose is to limit resource usage and avoid the cost of thread creation. Since Virtual Threads cost almost nothing to create and take up very little memory, pooling them just adds unnecessary complexity and contention.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// DO THIS (New for every task)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; executor &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Executors.&lt;span style=&#34;color:#a6e22e&#34;&gt;newVirtualThreadPerTaskExecutor&lt;/span&gt;()) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    executor.&lt;span style=&#34;color:#a6e22e&#34;&gt;submit&lt;/span&gt;(() &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; doWork());
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// DON&amp;#39;T DO THIS (Pooling virtual threads is an anti-pattern)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// ExecutorService pool = Executors.newFixedThreadPool(100); &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;2-avoid-pinning-replace-synchronized&#34;&gt;2. Avoid &amp;ldquo;Pinning&amp;rdquo; (Replace &lt;code&gt;synchronized&lt;/code&gt;)&lt;/h3&gt;
+&lt;p&gt;As we discussed, &lt;strong&gt;Pinning&lt;/strong&gt; happens when a Virtual Thread cannot be &amp;ldquo;unmounted&amp;rdquo; from its Carrier Thread during a blocking operation. This usually happens inside &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Virtual Threads - Deep Dive</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
+      <description>&lt;p&gt;To understand what Virtual Threads do under the hood, we have to look at the &amp;ldquo;Magic&amp;rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.&lt;/p&gt;
+&lt;p&gt;Before Java 21, a &lt;strong&gt;Java Thread&lt;/strong&gt; was just a thin wrapper around an &lt;strong&gt;OS Thread&lt;/strong&gt;. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-architecture-mn-scheduling&#34;&gt;1. The Architecture: M:N Scheduling&lt;/h3&gt;
+&lt;p&gt;Virtual Threads introduce a &amp;ldquo;layered&amp;rdquo; approach. Instead of a 1:1 relationship with the OS, we now have an &lt;strong&gt;M:N relationship&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

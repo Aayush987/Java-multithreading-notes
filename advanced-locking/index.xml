@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Advanced Locking on Study Notes</title>
+    <link>https://Aayush987.github.io/advanced-locking/</link>
+    <description>Recent content in Advanced Locking on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://Aayush987.github.io/advanced-locking/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ReentrantLock - tryLock &amp; Interruptibility</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ReentrantLock&lt;/code&gt; is a manual alternative to &lt;code&gt;synchronized&lt;/code&gt;. We use it when we need to break &lt;strong&gt;Coffman&amp;rsquo;s Conditions&lt;/strong&gt; for deadlocks. Specifically:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Breaking &amp;ldquo;No Preemption&amp;rdquo;:&lt;/strong&gt; With &lt;code&gt;tryLock()&lt;/code&gt;, if a thread can&amp;rsquo;t get the lock, it can walk away instead of hanging.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Breaking &amp;ldquo;Uninterruptible Wait&amp;rdquo;:&lt;/strong&gt; With &lt;code&gt;lockInterruptibly()&lt;/code&gt;, we can stop a waiting thread externally using &lt;code&gt;thread.interrupt()&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-vs-reentrantlock&#34;&gt;2. Comparison: &lt;code&gt;synchronized&lt;/code&gt; vs. &lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Flexibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Block-scoped only).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Can start lock in one method, end in another).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Fairness&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Random thread gets the lock).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Optional (Can grant lock to the longest-waiting thread).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Timeout Support&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Waits forever).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes (&lt;code&gt;tryLock&lt;/code&gt;)&lt;/strong&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Interruptibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Cannot be interrupted while waiting).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes (&lt;code&gt;lockInterruptibly&lt;/code&gt;)&lt;/strong&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple (Automatic cleanup).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Complex (Requires manual &lt;code&gt;unlock()&lt;/code&gt; in a &lt;code&gt;finally&lt;/code&gt; block).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-safe-transfer-no-deadlock&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Safe Transfer (No Deadlock)&lt;/h3&gt;
+&lt;p&gt;This snippet uses &lt;code&gt;tryLock()&lt;/code&gt; to attempt to acquire two locks. If it fails to get the second one, it &amp;ldquo;preempts&amp;rdquo; itself by releasing the first one and trying again later.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ReentrantLock - UI Application Example</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a UI application, responsiveness is king. If a background thread is performing a heavy database update or image processing, we don&amp;rsquo;t want the UI to &amp;ldquo;hang&amp;rdquo; while waiting for that data. &lt;code&gt;ReentrantLock&lt;/code&gt; with &lt;code&gt;tryLock()&lt;/code&gt; allows the UI thread to check: &lt;em&gt;&amp;ldquo;Is the data ready? No? Okay, I&amp;rsquo;ll keep the loading spinner spinning and try again in the next frame.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-blocking-vs-non-blocking-ui&#34;&gt;2. Comparison: Blocking vs. Non-Blocking UI&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt; (Blocking)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock.tryLock()&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;User Experience&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;App freezes (Not Responding) until lock is free.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;App remains responsive; can show a &amp;ldquo;Busy&amp;rdquo; message.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread Behavior&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;UI Thread is suspended by the OS.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;UI Thread continues its loop, handling other clicks.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Timeout Support&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;None.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Can try for $X$ milliseconds and then give up.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-responsive-ui&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Responsive UI&lt;/h3&gt;
+&lt;p&gt;Imagine a Dashboard that updates every second. If the &amp;ldquo;Database Thread&amp;rdquo; is currently writing to the shared &lt;code&gt;PriceData&lt;/code&gt; object, the UI thread shouldn&amp;rsquo;t wait; it should just skip this update or show the old data.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ReentrantReadWriteLock &amp; Database Implementation</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Standard locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) are &lt;strong&gt;Mutual Exclusion&lt;/strong&gt; locks—they don&amp;rsquo;t care if a thread is reading or writing; they block everyone else.
+&lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &amp;ldquo;Mutual Exclusion&amp;rdquo; when a thread needs to &lt;strong&gt;write&lt;/strong&gt; (modify) the data.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-reentrantlock-vs-readwritelock&#34;&gt;2. Comparison: ReentrantLock vs. ReadWriteLock&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantReadWriteLock&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Read/Read&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt; (One at a time).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Non-Blocking&lt;/strong&gt; (Infinite simultaneous readers).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Read/Write&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Reader waits for Writer).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Write/Write&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Only one Writer at a time).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Best Use Case&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;General purpose, frequent updates.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Databases, Caches, &amp;ldquo;Read-Heavy&amp;rdquo; metadata.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-a-simple-database&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: A Simple Database&lt;/h3&gt;
+&lt;p&gt;In this example, we create a &lt;code&gt;SimpleDatabase&lt;/code&gt; where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>UseCase Scenario For Reentrant &amp; ReentrantReadWrite Lock</title>
+      <link>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
+      <description>&lt;p&gt;The choice between a standard &lt;strong&gt;ReentrantLock&lt;/strong&gt; and a &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; usually comes down to one metric: the &lt;strong&gt;Read-to-Write ratio&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;If your threads are mostly looking at data without changing it, a standard lock creates a massive, unnecessary bottleneck. If your threads are constantly updating data, the overhead of a ReadWriteLock actually makes it slower than a simple lock.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-scenario-a-high-contention-updates-use-reentrantlock&#34;&gt;1. Scenario A: High-Contention Updates (Use &lt;code&gt;ReentrantLock&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Scenario:&lt;/strong&gt; A &lt;strong&gt;Counter&lt;/strong&gt; or a &lt;strong&gt;Bank Account&lt;/strong&gt; where every single thread that enters is there to modify the value (e.g., &lt;code&gt;increment()&lt;/code&gt; or &lt;code&gt;deposit()&lt;/code&gt;).&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

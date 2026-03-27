@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Condition Variables - Inter-Thread Communication | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+Sometimes a thread has the lock but cannot proceed because the data isn&rsquo;t ready (e.g., a Consumer finds an empty queue).
+
+The Problem: If the thread just loops (while(queue.isEmpty());), it wastes 100% of the CPU.
+The Solution: The thread &ldquo;waits&rdquo; on a condition. This releases the lock and puts the thread to sleep. When another thread makes the condition true, it &ldquo;signals&rdquo; (notifies) the sleeping thread to wake up and try again.
+
+2. Comparison: wait/notify vs. Condition Object
+
+  
+      
+          Feature
+          Object.wait/notify
+          java.util.concurrent.Condition
+      
+  
+  
+      
+          Association
+          Every Java Object has one.
+          Associated with a ReentrantLock.
+      
+      
+          Capability
+          Only one &ldquo;wait set&rdquo; per object.
+          Multiple conditions per lock (e.g., notFull and notEmpty).
+      
+      
+          Control
+          Standard synchronized blocks.
+          Precision control with signal() and await().
+      
+      
+          Analogy
+          A single waiting room for a whole office.
+          Multiple specific waiting rooms (e.g., &ldquo;Radiology&rdquo; vs &ldquo;ER&rdquo;).
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: Multi-Condition Producer-Consumer
+Using Condition objects with ReentrantLock allows us to be very specific about which threads we wake up.">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/inter-thread-communication/condition_variables/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/inter-thread-communication/condition_variables/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/inter-thread-communication/condition_variables/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Condition Variables - Inter-Thread Communication">
+  <meta property="og:description" content="1. The “Why” Sometimes a thread has the lock but cannot proceed because the data isn’t ready (e.g., a Consumer finds an empty queue).
+The Problem: If the thread just loops (while(queue.isEmpty());), it wastes 100% of the CPU. The Solution: The thread “waits” on a condition. This releases the lock and puts the thread to sleep. When another thread makes the condition true, it “signals” (notifies) the sleeping thread to wake up and try again. 2. Comparison: wait/notify vs. Condition Object Feature Object.wait/notify java.util.concurrent.Condition Association Every Java Object has one. Associated with a ReentrantLock. Capability Only one “wait set” per object. Multiple conditions per lock (e.g., notFull and notEmpty). Control Standard synchronized blocks. Precision control with signal() and await(). Analogy A single waiting room for a whole office. Multiple specific waiting rooms (e.g., “Radiology” vs “ER”). 3. The “Golden” Snippet: Multi-Condition Producer-Consumer Using Condition objects with ReentrantLock allows us to be very specific about which threads we wake up.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="inter-thread-communication">
+    <meta property="article:published_time" content="2026-03-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-27T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Condition Variables - Inter-Thread Communication">
+  <meta name="twitter:description" content="1. The “Why” Sometimes a thread has the lock but cannot proceed because the data isn’t ready (e.g., a Consumer finds an empty queue).
+The Problem: If the thread just loops (while(queue.isEmpty());), it wastes 100% of the CPU. The Solution: The thread “waits” on a condition. This releases the lock and puts the thread to sleep. When another thread makes the condition true, it “signals” (notifies) the sleeping thread to wake up and try again. 2. Comparison: wait/notify vs. Condition Object Feature Object.wait/notify java.util.concurrent.Condition Association Every Java Object has one. Associated with a ReentrantLock. Capability Only one “wait set” per object. Multiple conditions per lock (e.g., notFull and notEmpty). Control Standard synchronized blocks. Precision control with signal() and await(). Analogy A single waiting room for a whole office. Multiple specific waiting rooms (e.g., “Radiology” vs “ER”). 3. The “Golden” Snippet: Multi-Condition Producer-Consumer Using Condition objects with ReentrantLock allows us to be very specific about which threads we wake up.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Inter Thread Coordination",
+      "item": "https://Aayush987.github.io/inter-thread-communication/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Condition Variables - Inter-Thread Communication",
+      "item": "https://Aayush987.github.io/inter-thread-communication/condition_variables/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Condition Variables - Inter-Thread Communication",
+  "name": "Condition Variables - Inter-Thread Communication",
+  "description": "1. The \u0026ldquo;Why\u0026rdquo; Sometimes a thread has the lock but cannot proceed because the data isn\u0026rsquo;t ready (e.g., a Consumer finds an empty queue).\nThe Problem: If the thread just loops (while(queue.isEmpty());), it wastes 100% of the CPU. The Solution: The thread \u0026ldquo;waits\u0026rdquo; on a condition. This releases the lock and puts the thread to sleep. When another thread makes the condition true, it \u0026ldquo;signals\u0026rdquo; (notifies) the sleeping thread to wake up and try again. 2. Comparison: wait/notify vs. Condition Object Feature Object.wait/notify java.util.concurrent.Condition Association Every Java Object has one. Associated with a ReentrantLock. Capability Only one \u0026ldquo;wait set\u0026rdquo; per object. Multiple conditions per lock (e.g., notFull and notEmpty). Control Standard synchronized blocks. Precision control with signal() and await(). Analogy A single waiting room for a whole office. Multiple specific waiting rooms (e.g., \u0026ldquo;Radiology\u0026rdquo; vs \u0026ldquo;ER\u0026rdquo;). 3. The \u0026ldquo;Golden\u0026rdquo; Snippet: Multi-Condition Producer-Consumer Using Condition objects with ReentrantLock allows us to be very specific about which threads we wake up.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "1. The “Why” Sometimes a thread has the lock but cannot proceed because the data isn’t ready (e.g., a Consumer finds an empty queue).\nThe Problem: If the thread just loops (while(queue.isEmpty());), it wastes 100% of the CPU. The Solution: The thread “waits” on a condition. This releases the lock and puts the thread to sleep. When another thread makes the condition true, it “signals” (notifies) the sleeping thread to wake up and try again. 2. Comparison: wait/notify vs. Condition Object Feature Object.wait/notify java.util.concurrent.Condition Association Every Java Object has one. Associated with a ReentrantLock. Capability Only one “wait set” per object. Multiple conditions per lock (e.g., notFull and notEmpty). Control Standard synchronized blocks. Precision control with signal() and await(). Analogy A single waiting room for a whole office. Multiple specific waiting rooms (e.g., “Radiology” vs “ER”). 3. The “Golden” Snippet: Multi-Condition Producer-Consumer Using Condition objects with ReentrantLock allows us to be very specific about which threads we wake up.\nimport java.util.LinkedList; import java.util.Queue; import java.util.concurrent.locks.Condition; import java.util.concurrent.locks.Lock; import java.util.concurrent.locks.ReentrantLock; public class AdvancedBuffer { private final Queue\u003cInteger\u003e queue = new LinkedList\u003c\u003e(); private final int CAPACITY = 5; private final Lock lock = new ReentrantLock(); // Two separate \"waiting rooms\" private final Condition stackEmptyCondition = lock.newCondition(); private final Condition stackFullCondition = lock.newCondition(); public void add(int item) throws InterruptedException { lock.lock(); try { while (queue.size() == CAPACITY) { // Buffer is full; Producer goes to sleep stackFullCondition.await(); } queue.add(item); System.out.println(\"Added: \" + item); // Wake up only the Consumers stackEmptyCondition.signal(); } finally { lock.unlock(); } } public int remove() throws InterruptedException { lock.lock(); try { while (queue.isEmpty()) { // Buffer is empty; Consumer goes to sleep stackEmptyCondition.await(); } int item = queue.poll(); System.out.println(\"Removed: \" + item); // Wake up only the Producers stackFullCondition.signal(); return item; } finally { lock.unlock(); } } } Code Explanation: await(): This atomicaly releases the lock and puts the thread in a waiting state. This is crucial—if it didn’t release the lock, the other thread could never enter to change the condition! while vs if: Always use a while loop to check the condition. This handles Spurious Wakeups (where a thread wakes up for no reason) and ensures the condition is still true when the thread regains the lock. signal() vs signalAll(): signal() wakes up one thread. signalAll() wakes up everyone. signal() is more efficient but requires you to be certain that any thread woken up can actually proceed. Example Output: [Consumer]: Queue empty. Waiting... [Producer]: Added 10. Signaling stackEmptyCondition... [Consumer]: Woken up! Removed 10. Signaling stackFullCondition... 4. The Gotchas IllegalMonitorStateException: You must hold the lock before calling await() or signal(). If you call these outside of the lock.lock() block, the code will crash. The Lost Signal: If you signal() before a thread is actually awaiting(), the signal is lost forever. Unlike Semaphores (which remember permits), Conditions have no memory. Deadlock: If Thread A is waiting for a signal from Thread B, and Thread B is waiting for a signal from Thread A, and neither can signal without the other moving, you have a deadlock. ",
+  "wordCount" : "506",
+  "inLanguage": "en",
+  "datePublished": "2026-03-27T00:00:00Z",
+  "dateModified": "2026-03-27T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/inter-thread-communication/condition_variables/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Condition Variables - Inter-Thread Communication
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Sometimes a thread has the lock but cannot proceed because the data isn&rsquo;t ready (e.g., a Consumer finds an empty queue).</p>
+<ul>
+<li><strong>The Problem:</strong> If the thread just loops (<code>while(queue.isEmpty());</code>), it wastes 100% of the CPU.</li>
+<li><strong>The Solution:</strong> The thread &ldquo;waits&rdquo; on a condition. This <strong>releases the lock</strong> and puts the thread to sleep. When another thread makes the condition true, it &ldquo;signals&rdquo; (notifies) the sleeping thread to wake up and try again.</li>
+</ul>
+<h3 id="2-comparison-waitnotify-vs-condition-object">2. Comparison: <code>wait/notify</code> vs. <code>Condition</code> Object<a hidden class="anchor" aria-hidden="true" href="#2-comparison-waitnotify-vs-condition-object">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>Object.wait/notify</code></th>
+          <th style="text-align: left"><code>java.util.concurrent.Condition</code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Association</strong></td>
+          <td style="text-align: left">Every Java Object has one.</td>
+          <td style="text-align: left">Associated with a <code>ReentrantLock</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Capability</strong></td>
+          <td style="text-align: left">Only one &ldquo;wait set&rdquo; per object.</td>
+          <td style="text-align: left"><strong>Multiple</strong> conditions per lock (e.g., <code>notFull</code> and <code>notEmpty</code>).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Control</strong></td>
+          <td style="text-align: left">Standard <code>synchronized</code> blocks.</td>
+          <td style="text-align: left">Precision control with <code>signal()</code> and <code>await()</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Analogy</strong></td>
+          <td style="text-align: left">A single waiting room for a whole office.</td>
+          <td style="text-align: left">Multiple specific waiting rooms (e.g., &ldquo;Radiology&rdquo; vs &ldquo;ER&rdquo;).</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-multi-condition-producer-consumer">3. The &ldquo;Golden&rdquo; Snippet: Multi-Condition Producer-Consumer<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-multi-condition-producer-consumer">#</a></h3>
+<p>Using <code>Condition</code> objects with <code>ReentrantLock</code> allows us to be very specific about <em>which</em> threads we wake up.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.LinkedList;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Queue;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.Condition;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.Lock;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.ReentrantLock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AdvancedBuffer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Queue<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> queue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> CAPACITY <span style="color:#f92672">=</span> 5;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Lock lock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantLock();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Two separate &#34;waiting rooms&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Condition stackEmptyCondition <span style="color:#f92672">=</span> lock.<span style="color:#a6e22e">newCondition</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Condition stackFullCondition <span style="color:#f92672">=</span> lock.<span style="color:#a6e22e">newCondition</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add</span>(<span style="color:#66d9ef">int</span> item) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        lock.<span style="color:#a6e22e">lock</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (queue.<span style="color:#a6e22e">size</span>() <span style="color:#f92672">==</span> CAPACITY) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Buffer is full; Producer goes to sleep</span>
+</span></span><span style="display:flex;"><span>                stackFullCondition.<span style="color:#a6e22e">await</span>(); 
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            queue.<span style="color:#a6e22e">add</span>(item);
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Added: &#34;</span> <span style="color:#f92672">+</span> item);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Wake up only the Consumers</span>
+</span></span><span style="display:flex;"><span>            stackEmptyCondition.<span style="color:#a6e22e">signal</span>(); 
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            lock.<span style="color:#a6e22e">unlock</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">remove</span>() <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        lock.<span style="color:#a6e22e">lock</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (queue.<span style="color:#a6e22e">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Buffer is empty; Consumer goes to sleep</span>
+</span></span><span style="display:flex;"><span>                stackEmptyCondition.<span style="color:#a6e22e">await</span>(); 
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> item <span style="color:#f92672">=</span> queue.<span style="color:#a6e22e">poll</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Removed: &#34;</span> <span style="color:#f92672">+</span> item);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Wake up only the Producers</span>
+</span></span><span style="display:flex;"><span>            stackFullCondition.<span style="color:#a6e22e">signal</span>(); 
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> item;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            lock.<span style="color:#a6e22e">unlock</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong><code>await()</code></strong>: This atomicaly <strong>releases the lock</strong> and puts the thread in a waiting state. This is crucial—if it didn&rsquo;t release the lock, the other thread could never enter to change the condition!</li>
+<li><strong><code>while</code> vs <code>if</code></strong>: Always use a <code>while</code> loop to check the condition. This handles <strong>Spurious Wakeups</strong> (where a thread wakes up for no reason) and ensures the condition is still true when the thread regains the lock.</li>
+<li><strong><code>signal()</code> vs <code>signalAll()</code></strong>: <code>signal()</code> wakes up one thread. <code>signalAll()</code> wakes up everyone. <code>signal()</code> is more efficient but requires you to be certain that any thread woken up can actually proceed.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>[Consumer]: Queue empty. Waiting...
+</span></span><span style="display:flex;"><span>[Producer]: Added 10. Signaling stackEmptyCondition...
+</span></span><span style="display:flex;"><span>[Consumer]: Woken up! Removed 10. Signaling stackFullCondition...
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>IllegalMonitorStateException</strong>: You <strong>must</strong> hold the lock before calling <code>await()</code> or <code>signal()</code>. If you call these outside of the <code>lock.lock()</code> block, the code will crash.</li>
+<li><strong>The Lost Signal</strong>: If you <code>signal()</code> before a thread is actually <code>awaiting()</code>, the signal is lost forever. Unlike Semaphores (which remember permits), Conditions have no memory.</li>
+<li><strong>Deadlock</strong>: If Thread A is waiting for a signal from Thread B, and Thread B is waiting for a signal from Thread A, and neither can signal without the other moving, you have a deadlock.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

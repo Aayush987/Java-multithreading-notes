@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Thread Introduction | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="Thread Creation Part 1 Capabilites &amp; Debugging
+1. Core Concept: Thread vs. Process
+Before diving into code, it is vital to understand the &ldquo;Container&rdquo; relationship:
+
+Process: An instance of a running program. It has its own memory space (Heap, Stack, etc.).
+Thread: A unit of execution within a process. Multiple threads share the same Heap but have their own Stack.
+
+
+2. Thread Capabilities
+Threads allow us to perform multiple tasks concurrently. Key capabilities include:">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Thread Introduction">
+  <meta property="og:description" content="Thread Creation Part 1 Capabilites &amp; Debugging 1. Core Concept: Thread vs. Process Before diving into code, it is vital to understand the “Container” relationship:
+Process: An instance of a running program. It has its own memory space (Heap, Stack, etc.). Thread: A unit of execution within a process. Multiple threads share the same Heap but have their own Stack. 2. Thread Capabilities Threads allow us to perform multiple tasks concurrently. Key capabilities include:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="thread-fundamentals">
+    <meta property="article:published_time" content="2026-03-26T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-26T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Thread Introduction">
+  <meta name="twitter:description" content="Thread Creation Part 1 Capabilites &amp; Debugging 1. Core Concept: Thread vs. Process Before diving into code, it is vital to understand the “Container” relationship:
+Process: An instance of a running program. It has its own memory space (Heap, Stack, etc.). Thread: A unit of execution within a process. Multiple threads share the same Heap but have their own Stack. 2. Thread Capabilities Threads allow us to perform multiple tasks concurrently. Key capabilities include:">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Multithreading Fundamentals",
+      "item": "https://Aayush987.github.io/thread-fundamentals/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Thread Creation",
+      "item": "https://Aayush987.github.io/thread-fundamentals/thread-creation/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Thread Introduction",
+      "item": "https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Thread Introduction",
+  "name": "Thread Introduction",
+  "description": "Thread Creation Part 1 Capabilites \u0026amp; Debugging 1. Core Concept: Thread vs. Process Before diving into code, it is vital to understand the \u0026ldquo;Container\u0026rdquo; relationship:\nProcess: An instance of a running program. It has its own memory space (Heap, Stack, etc.). Thread: A unit of execution within a process. Multiple threads share the same Heap but have their own Stack. 2. Thread Capabilities Threads allow us to perform multiple tasks concurrently. Key capabilities include:\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Thread Creation Part 1 Capabilites \u0026 Debugging 1. Core Concept: Thread vs. Process Before diving into code, it is vital to understand the “Container” relationship:\nProcess: An instance of a running program. It has its own memory space (Heap, Stack, etc.). Thread: A unit of execution within a process. Multiple threads share the same Heap but have their own Stack. 2. Thread Capabilities Threads allow us to perform multiple tasks concurrently. Key capabilities include:\nParallelism: Running tasks at the exact same time on multi-core CPUs. Responsiveness: Keeping a UI or main service active while a background task (like a file download) runs. Resource Sharing: Easily passing data between threads since they share the same memory space. 3. The “Golden” Snippet (Java Example) Most Udemy courses use Java for these fundamentals. Here is the cleanest way to create a thread and set its properties for debugging.\npublic class Main { public static void main(String[] args) { Thread thread = new Thread(() -\u003e { // Code to be executed in the new thread System.out.println(\"We are now in thread: \" + Thread.currentThread().getName()); System.out.println(\"Current thread priority is: \" + Thread.currentThread().getPriority()); }); // 1. Give the thread a name (Crucial for Debugging) thread.setName(\"Worker-Thread-01\"); // 2. Set Priority (1 to 10) thread.setPriority(Thread.MAX_PRIORITY); System.out.println(\"Starting thread from: \" + Thread.currentThread().getName()); thread.start(); } } 4. Debugging \u0026 Monitoring One of the most important takeaways from this section is how to identify threads when things go wrong.\nWhy set a Thread Name? If your application crashes or hangs, a “Thread Dump” will show names like Thread-0, Thread-1, etc. This is useless in a large app.\nRule of Thumb: Always use thread.setName(\"DescriptiveName\") so you can find it in your logs or debugger.\nException Handling in Threads Standard try-catch blocks inside main won’t catch exceptions thrown in a separate thread. You must use an UncaughtExceptionHandler:\nthread.setUncaughtExceptionHandler((t, e) -\u003e { System.out.println(\"A critical error occurred in thread \" + t.getName() + \" : \" + e.getMessage()); }); 5. Summary Checklist for Revision Do I understand the difference between thread.start() and thread.run()? (Hint: run() doesn’t start a new thread!) Can I name a thread for better logging? Do I know how to set an Exception Handler for background errors? ",
+  "wordCount" : "364",
+  "inLanguage": "en",
+  "datePublished": "2026-03-26T00:00:00Z",
+  "dateModified": "2026-03-26T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Thread Introduction
+    </h1>
+    <div class="post-meta"><span title='2026-03-26 00:00:00 +0000 UTC'>March 26, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="thread-creation-part-1-capabilites--debugging">Thread Creation Part 1 Capabilites &amp; Debugging<a hidden class="anchor" aria-hidden="true" href="#thread-creation-part-1-capabilites--debugging">#</a></h1>
+<h2 id="1-core-concept-thread-vs-process">1. Core Concept: Thread vs. Process<a hidden class="anchor" aria-hidden="true" href="#1-core-concept-thread-vs-process">#</a></h2>
+<p>Before diving into code, it is vital to understand the &ldquo;Container&rdquo; relationship:</p>
+<ul>
+<li><strong>Process:</strong> An instance of a running program. It has its own memory space (Heap, Stack, etc.).</li>
+<li><strong>Thread:</strong> A unit of execution within a process. Multiple threads share the same <strong>Heap</strong> but have their own <strong>Stack</strong>.</li>
+</ul>
+<hr>
+<h2 id="2-thread-capabilities">2. Thread Capabilities<a hidden class="anchor" aria-hidden="true" href="#2-thread-capabilities">#</a></h2>
+<p>Threads allow us to perform multiple tasks concurrently. Key capabilities include:</p>
+<ul>
+<li><strong>Parallelism:</strong> Running tasks at the exact same time on multi-core CPUs.</li>
+<li><strong>Responsiveness:</strong> Keeping a UI or main service active while a background task (like a file download) runs.</li>
+<li><strong>Resource Sharing:</strong> Easily passing data between threads since they share the same memory space.</li>
+</ul>
+<hr>
+<h2 id="3-the-golden-snippet-java-example">3. The &ldquo;Golden&rdquo; Snippet (Java Example)<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-java-example">#</a></h2>
+<p>Most Udemy courses use Java for these fundamentals. Here is the cleanest way to create a thread and set its properties for debugging.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        Thread thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Code to be executed in the new thread</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;We are now in thread: &#34;</span> <span style="color:#f92672">+</span> Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>());
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Current thread priority is: &#34;</span> <span style="color:#f92672">+</span> Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getPriority</span>());
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 1. Give the thread a name (Crucial for Debugging)</span>
+</span></span><span style="display:flex;"><span>        thread.<span style="color:#a6e22e">setName</span>(<span style="color:#e6db74">&#34;Worker-Thread-01&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 2. Set Priority (1 to 10)</span>
+</span></span><span style="display:flex;"><span>        thread.<span style="color:#a6e22e">setPriority</span>(Thread.<span style="color:#a6e22e">MAX_PRIORITY</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Starting thread from: &#34;</span> <span style="color:#f92672">+</span> Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>());
+</span></span><span style="display:flex;"><span>        thread.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="4-debugging--monitoring">4. Debugging &amp; Monitoring<a hidden class="anchor" aria-hidden="true" href="#4-debugging--monitoring">#</a></h2>
+<p>One of the most important takeaways from this section is how to identify threads when things go wrong.</p>
+<h3 id="why-set-a-thread-name">Why set a Thread Name?<a hidden class="anchor" aria-hidden="true" href="#why-set-a-thread-name">#</a></h3>
+<p>If your application crashes or hangs, a &ldquo;Thread Dump&rdquo; will show names like <code>Thread-0</code>, <code>Thread-1</code>, etc. This is useless in a large app.</p>
+<blockquote>
+<p><strong>Rule of Thumb:</strong> Always use <code>thread.setName(&quot;DescriptiveName&quot;)</code> so you can find it in your logs or debugger.</p>
+</blockquote>
+<h3 id="exception-handling-in-threads">Exception Handling in Threads<a hidden class="anchor" aria-hidden="true" href="#exception-handling-in-threads">#</a></h3>
+<p>Standard <code>try-catch</code> blocks inside <code>main</code> won&rsquo;t catch exceptions thrown in a separate thread. You must use an <strong>UncaughtExceptionHandler</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>thread.<span style="color:#a6e22e">setUncaughtExceptionHandler</span>((t, e) <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;A critical error occurred in thread &#34;</span> <span style="color:#f92672">+</span> t.<span style="color:#a6e22e">getName</span>() 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; : &#34;</span> <span style="color:#f92672">+</span> e.<span style="color:#a6e22e">getMessage</span>());
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><hr>
+<h2 id="5-summary-checklist-for-revision">5. Summary Checklist for Revision<a hidden class="anchor" aria-hidden="true" href="#5-summary-checklist-for-revision">#</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"> Do I understand the difference between <code>thread.start()</code> and <code>thread.run()</code>? (Hint: <code>run()</code> doesn&rsquo;t start a new thread!)</li>
+<li><input disabled="" type="checkbox"> Can I name a thread for better logging?</li>
+<li><input disabled="" type="checkbox"> Do I know how to set an Exception Handler for background errors?</li>
+</ul>
+<hr>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,954 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Study Notes</title>
+    <link>https://Aayush987.github.io/</link>
+    <description>Recent content on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://Aayush987.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>1. AtomicReference -  Object Swapping</title>
+      <link>https://Aayush987.github.io/lockfree-algorithms/atomicreferencescompareandsetexamples/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicreferencescompareandsetexamples/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;The Concept:&lt;/strong&gt; While &lt;code&gt;AtomicInteger&lt;/code&gt; works for primitives, &lt;code&gt;AtomicReference&amp;lt;V&amp;gt;&lt;/code&gt; allows you to update a reference to an entire object as a single atomic unit. This is the foundation of &amp;ldquo;Immutable State&amp;rdquo; updates.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; java.util.concurrent.atomic.AtomicReference;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ConfigManager&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// A shared configuration object that many threads read&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; AtomicReference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Config&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; currentConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; AtomicReference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Config(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;updateConfig&lt;/span&gt;(String newVersion) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Config oldConfig;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Config newConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Config(newVersion);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            oldConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; currentConfig.&lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(); &lt;span style=&#34;color:#75715e&#34;&gt;// Snapshot of the pointer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;// We don&amp;#39;t modify oldConfig; we create a whole new one!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;currentConfig.&lt;span style=&#34;color:#a6e22e&#34;&gt;compareAndSet&lt;/span&gt;(oldConfig, newConfig));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        System.&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Config updated to: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; newVersion);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Config&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; String version;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Config(String v) { &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;version&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; v; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Explanation:&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Asynchronous, Non-Blocking IO - Thread-per-Core</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In the previous &amp;ldquo;Thread-per-Task&amp;rdquo; model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time &amp;ldquo;Context Switching&amp;rdquo; (saving the state of Thread 1 to load Thread 2). This is inefficient.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Thread-per-Core Goal:&lt;/strong&gt; Create exactly one thread for every physical CPU core. These threads &lt;strong&gt;never block&lt;/strong&gt;. If a thread needs to read from a socket and the data isn&amp;rsquo;t there, it doesn&amp;rsquo;t sleep; it moves to the next socket immediately.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Atomic Integers &amp; Lock-Free E-commerce</title>
+      <link>https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In an e-commerce platform, the &amp;ldquo;Inventory Count&amp;rdquo; is the most contested variable.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem with Locks:&lt;/strong&gt; If 10,000 users try to buy an item, &lt;code&gt;synchronized&lt;/code&gt; puts 9,999 threads to sleep while 1 thread works. The overhead of waking them all up is higher than the actual work of subtracting 1 from the inventory.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Atomic Solution:&lt;/strong&gt; &lt;code&gt;AtomicInteger&lt;/code&gt; uses the CPU&amp;rsquo;s native ability to &amp;ldquo;reserve&amp;rdquo; a memory address for a nanosecond, update it, and release it without ever suspending a thread.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-vs-atomicinteger&#34;&gt;2. Comparison: Synchronized vs. AtomicInteger&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized int&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicInteger&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Mechanism&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Pessimistic).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-Free (Optimistic CAS).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread State&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Threads become &lt;code&gt;BLOCKED&lt;/code&gt;.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Threads stay &lt;code&gt;RUNNABLE&lt;/code&gt; (Spinning).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High contention = slow.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High contention = fast (until CPU saturation).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Operations&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Manual &lt;code&gt;count++&lt;/code&gt; (3 steps).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Atomic &lt;code&gt;decrementAndGet()&lt;/code&gt; (1 step).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-high-traffic-inventory&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: High-Traffic Inventory&lt;/h3&gt;
+&lt;p&gt;This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single &lt;code&gt;synchronized&lt;/code&gt; block.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Atomic Operations, Volatile, &amp; Metrics</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Traditional locking (&lt;code&gt;synchronized&lt;/code&gt;) is &amp;ldquo;heavy.&amp;rdquo; It involves suspending threads, context switching, and OS overhead. &lt;strong&gt;Atomic Operations&lt;/strong&gt; allow us to perform &amp;ldquo;Read-Modify-Write&amp;rdquo; cycles as a single, uninterruptible unit at the hardware level. The &lt;code&gt;volatile&lt;/code&gt; keyword ensures that changes made by one thread are immediately visible to others, preventing &amp;ldquo;stale data&amp;rdquo; bugs caused by CPU caching.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-volatile-vs-atomic-vs-synchronized&#34;&gt;2. Comparison: Volatile vs. Atomic vs. Synchronized&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;volatile&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicInteger&lt;/code&gt; / &lt;code&gt;AtomicLong&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Visibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Atomicity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;No&lt;/strong&gt; (Doesn&amp;rsquo;t fix &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Locking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free (uses CAS).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (uses Locks).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Medium/Low.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-performance-metrics&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Performance Metrics&lt;/h3&gt;
+&lt;p&gt;Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Atomic References &amp; Lock-Free Data Structures</title>
+      <link>https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;If you want to update a complex object (like a &lt;code&gt;User&lt;/code&gt; profile or a &lt;code&gt;Node&lt;/code&gt; in a list) across multiple threads, you usually have to lock the entire object.
+&lt;strong&gt;AtomicReference&lt;/strong&gt; allows you to swap an entire object reference atomically. It says: &amp;ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-object-vs-atomicreference&#34;&gt;2. Comparison: Synchronized Object vs. AtomicReference&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized (obj)&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicReference&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Safety&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Prevents multiple threads from entering.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Prevents &amp;ldquo;stale&amp;rdquo; updates via CAS.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Threads sleep).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Threads &amp;ldquo;spin&amp;rdquo; and retry).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Granularity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Locks the whole block of code.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only protects the &lt;em&gt;reference&lt;/em&gt; (the pointer).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High overhead for small updates.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely fast for &amp;ldquo;pointer swapping.&amp;rdquo;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-a-lock-free-stack&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: A Lock-Free Stack&lt;/h3&gt;
+&lt;p&gt;A standard &lt;code&gt;Stack&lt;/code&gt; uses &lt;code&gt;synchronized&lt;/code&gt; on &lt;code&gt;push&lt;/code&gt; and &lt;code&gt;pop&lt;/code&gt;. In this high-performance version, we use &lt;code&gt;AtomicReference&lt;/code&gt; to manage the &amp;ldquo;Head&amp;rdquo; of the stack without any locks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Condition Variables - Inter-Thread Communication</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/condition_variables/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/condition_variables/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Sometimes a thread has the lock but cannot proceed because the data isn&amp;rsquo;t ready (e.g., a Consumer finds an empty queue).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If the thread just loops (&lt;code&gt;while(queue.isEmpty());&lt;/code&gt;), it wastes 100% of the CPU.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Solution:&lt;/strong&gt; The thread &amp;ldquo;waits&amp;rdquo; on a condition. This &lt;strong&gt;releases the lock&lt;/strong&gt; and puts the thread to sleep. When another thread makes the condition true, it &amp;ldquo;signals&amp;rdquo; (notifies) the sleeping thread to wake up and try again.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-object&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Object&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;Object.wait/notify&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;java.util.concurrent.Condition&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Association&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Every Java Object has one.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Associated with a &lt;code&gt;ReentrantLock&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Capability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only one &amp;ldquo;wait set&amp;rdquo; per object.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Multiple&lt;/strong&gt; conditions per lock (e.g., &lt;code&gt;notFull&lt;/code&gt; and &lt;code&gt;notEmpty&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Control&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Standard &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Precision control with &lt;code&gt;signal()&lt;/code&gt; and &lt;code&gt;await()&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Analogy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A single waiting room for a whole office.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Multiple specific waiting rooms (e.g., &amp;ldquo;Radiology&amp;rdquo; vs &amp;ldquo;ER&amp;rdquo;).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-multi-condition-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Multi-Condition Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;Using &lt;code&gt;Condition&lt;/code&gt; objects with &lt;code&gt;ReentrantLock&lt;/code&gt; allows us to be very specific about &lt;em&gt;which&lt;/em&gt; threads we wake up.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Critical Section &amp; Synchronization</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;We need a way to make a sequence of operations &lt;strong&gt;Atomic&lt;/strong&gt; (all-or-nothing). Since the CPU can interrupt a thread at any micro-instruction, we use &lt;strong&gt;Mutual Exclusion (Mutex)&lt;/strong&gt;. This ensures that if Thread A is halfway through an update, Thread B is physically blocked from starting that same update until Thread A finishes.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic-the-monitorlock-concept&#34;&gt;2. Visual Logic: The Monitor/Lock Concept&lt;/h3&gt;
+&lt;p&gt;In Java, every &lt;strong&gt;Object&lt;/strong&gt; has a built-in &amp;ldquo;Monitor&amp;rdquo; (or Intrinsic Lock). Think of it like a bathroom with a single key:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Deep Dive- Synchronization in Action</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;We use synchronization to prevent &lt;strong&gt;Data Corruption&lt;/strong&gt;. Without it, two threads can &amp;ldquo;read&amp;rdquo; the same initial value, perform an operation, and &amp;ldquo;write&amp;rdquo; back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).&lt;/p&gt;
+&lt;h3 id=&#34;2-detailed-code-explanation&#34;&gt;2. Detailed Code Explanation&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s look at a common pattern: &lt;strong&gt;The Thread-Safe Counter.&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Counter&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; count &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 0;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// The &amp;#39;synchronized&amp;#39; keyword tells Java: &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;#34;Only one thread can enter this method at a time using this specific object&amp;#39;s lock.&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;synchronized&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 1: Read &amp;#39;count&amp;#39; from Memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 2: Add 1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 3: Write &amp;#39;count&amp;#39; back to Memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;synchronized&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;getCount&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;how-the-jvm-executes-this&#34;&gt;How the JVM executes this:&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;The Lock Acquisition:&lt;/strong&gt; When Thread A calls &lt;code&gt;increment()&lt;/code&gt;, it looks at the &lt;code&gt;Counter&lt;/code&gt; object. Every object in Java has a &lt;strong&gt;Monitor&lt;/strong&gt;. Thread A &amp;ldquo;grabs&amp;rdquo; the monitor.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Exclusion:&lt;/strong&gt; While Thread A is inside &lt;code&gt;increment()&lt;/code&gt;, Thread B tries to call &lt;code&gt;increment()&lt;/code&gt;. The JVM sees that Thread A holds the monitor. Thread B is put into a &lt;strong&gt;BLOCKED&lt;/strong&gt; state (it stops executing and waits).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Memory Barrier:&lt;/strong&gt; When Thread A finishes, it &amp;ldquo;releases&amp;rdquo; the monitor. Crucially, it also flushes its changes to the &lt;strong&gt;Main Memory (Heap)&lt;/strong&gt; so other threads can see the updated value.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Hand-off:&lt;/strong&gt; The JVM wakes up Thread B. Thread B now acquires the monitor and sees the updated value left by Thread A.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;3-finer-grained-synchronization-the-block&#34;&gt;3. Finer-Grained Synchronization (The Block)&lt;/h3&gt;
+&lt;p&gt;Sometimes, synchronizing an entire method is overkill. If your method is 100 lines long, but only 1 line touches the shared variable, you should use a &lt;strong&gt;Synchronized Block&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>High-Performance IO with Virtual Threads</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
+      <description>&lt;p&gt;This section is the culmination of everything we&amp;rsquo;ve learned about IO. It explains how &lt;strong&gt;Virtual Threads&lt;/strong&gt; allow us to write code that &lt;em&gt;looks&lt;/em&gt; like the old &amp;ldquo;Thread-per-Request&amp;rdquo; model but &lt;em&gt;performs&lt;/em&gt; like the &amp;ldquo;Asynchronous/NIO&amp;rdquo; model.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In the previous NIO (Non-Blocking) models, we had to break our logic into &amp;ldquo;callbacks&amp;rdquo; or &amp;ldquo;promises.&amp;rdquo; This made error handling and stack traces a nightmare.
+Virtual Threads change the game:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Magic:&lt;/strong&gt; When a Virtual Thread performs a blocking IO operation (like &lt;code&gt;socket.read()&lt;/code&gt; or &lt;code&gt;jdbc.executeQuery()&lt;/code&gt;), the underlying JVM &lt;strong&gt;unmounts&lt;/strong&gt; the virtual thread from the physical OS thread (Carrier Thread).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Result:&lt;/strong&gt; The physical OS thread is now free to run &lt;em&gt;another&lt;/em&gt; Virtual Thread while the first one waits for the network. No OS-level context switching occurs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-nio-selectors-vs-virtual-threads&#34;&gt;2. Comparison: NIO (Selectors) vs. Virtual Threads&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;NIO / Netty / Event Loop&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Virtual Threads (Loom)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Code Style&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Asynchronous / Reactive.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Synchronous / Procedural.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Stack Traces&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Often fragmented and useless.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complete and readable.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Debugging&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Difficult (Step-through is hard).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Easy&lt;/strong&gt; (Standard debugger works).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Scalability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Millions of connections).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;High&lt;/strong&gt; (Millions of connections).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Resource Usage&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Low.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-simple-high-scale-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The &amp;ldquo;Simple&amp;rdquo; High-Scale Server&lt;/h3&gt;
+&lt;p&gt;This code looks exactly like a basic blocking server from 20 years ago, but it can handle 1,000,000 concurrent connections on a standard server.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Blocking IO</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Blocking IO&lt;/strong&gt; is the &amp;ldquo;classic&amp;rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If you have 1,000 users and each requires a blocking thread, you need 1,000 threads. Threads are expensive—they consume memory (Stack) and cause &amp;ldquo;Context Switching&amp;rdquo; overhead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-blocking-io-vs-non-blocking-io-nio&#34;&gt;2. Comparison: Blocking IO vs. Non-Blocking IO (NIO)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Blocking IO (BIO)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Non-Blocking IO (NIO)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread Behavior&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Thread &amp;ldquo;stops&amp;rdquo; and waits for data.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Thread &amp;ldquo;asks&amp;rdquo; and moves on if data isn&amp;rsquo;t ready.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Efficiency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High for single, long-lived connections.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High for thousands of concurrent connections.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complexity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple (Sequential code).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Requires Event Loops/Callbacks).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Scalability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by Thread Count / Memory.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by CPU / Network Bandwidth.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-standard-blocking-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Standard Blocking Server&lt;/h3&gt;
+&lt;p&gt;This is a classic &amp;ldquo;One Thread Per Connection&amp;rdquo; model. It works fine for a few users, but it scales poorly.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Non-Blocking &amp; Lock-Free Operations</title>
+      <link>https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Traditional locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) have major downsides:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Deadlocks:&lt;/strong&gt; Threads waiting for each other forever.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Priority Inversion:&lt;/strong&gt; A low-priority thread holding a lock prevents a high-priority thread from running.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Performance Overhead:&lt;/strong&gt; Suspending and resuming a thread (context switching) is expensive for the OS.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Lock-Free&lt;/strong&gt; operations use hardware-level atomic instructions to ensure that at least one thread always makes progress, even if others are interrupted or fail.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-blocking-vs-lock-free-non-blocking&#34;&gt;2. Comparison: Blocking vs. Lock-Free (Non-Blocking)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Blocking (Locks)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Lock-Free (Non-Blocking)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Philosophy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&amp;ldquo;Pessimistic&amp;rdquo; - Assume trouble and lock the door.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&amp;ldquo;Optimistic&amp;rdquo; - Assume success and retry if failed.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Hardware Tool&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Mutex / Monitors.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;CAS (Compare-And-Swap)&lt;/strong&gt; instructions.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Deadlock Risk&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Zero.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Throughput&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by lock contention.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Scales better with more CPU cores).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complexity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple to write and reason about.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely difficult to design correctly.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-atomic-compare-and-swap-cas&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Atomic Compare-And-Swap (CAS)&lt;/h3&gt;
+&lt;p&gt;The heart of every lock-free algorithm is the &lt;strong&gt;CAS&lt;/strong&gt; operation. It is a single CPU instruction that says: &lt;em&gt;&amp;ldquo;If the value in memory is X, change it to Y. If it&amp;rsquo;s not X anymore, don&amp;rsquo;t do anything and tell me I failed.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Performance &amp; Optimization for Latency in Threads</title>
+      <link>https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/</guid>
+      <description>&lt;h1 id=&#34;introduction-to-performance--optimization-for-latency&#34;&gt;Introduction to Performance &amp;amp; Optimization for Latency&lt;/h1&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a single-threaded environment, tasks are executed sequentially, meaning the total time is the sum of all tasks. We use multithreading for &lt;strong&gt;Latency Optimization&lt;/strong&gt; to break a single intensive task into smaller sub-tasks that run in parallel, reducing the wall-clock time the user has to wait for a result.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic&#34;&gt;2. Visual Logic&lt;/h3&gt;
+&lt;p&gt;The goal is to move from a &amp;ldquo;Serial&amp;rdquo; execution to a &amp;ldquo;Parallel&amp;rdquo; execution. If a task can be decomposed, we distribute the workload across multiple CPU cores.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Virtual Threads (Project Loom)</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Until now, we had two choices:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Platform Threads (BIO):&lt;/strong&gt; Easy to write, but expensive. 1,000 threads = 1GB RAM. You run out of memory quickly.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Asynchronous (NIO):&lt;/strong&gt; Scales to millions, but &amp;ldquo;Callback Hell&amp;rdquo; makes it incredibly hard to write, debug, and read.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Virtual Threads&lt;/strong&gt; give you the best of both worlds: You write simple, blocking code (like in the 90s), but the JVM magically handles it like a high-performance Asynchronous system under the hood.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Locking Strategies &amp; Deadlocks</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;As applications grow, a single lock (like &lt;code&gt;synchronized(this)&lt;/code&gt;) becomes a bottleneck. To improve performance, we use &lt;strong&gt;Fine-Grained Locking&lt;/strong&gt; (multiple locks for different resources). However, the moment you have more than one lock, the &lt;strong&gt;Order of Acquisition&lt;/strong&gt; matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-coarse-grained-vs-fine-grained-locking&#34;&gt;2. Comparison: Coarse-Grained vs. Fine-Grained Locking&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Coarse-Grained&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Fine-Grained&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Simplicity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (One lock for everything).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Many locks to manage).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Threads queue up unnecessarily).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Threads only block if using the same resource).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Risk of Deadlock&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Zero (You can&amp;rsquo;t deadlock with one lock).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Requires strict discipline).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized(database)&lt;/code&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;lockTableA&lt;/code&gt;, &lt;code&gt;lockTableB&lt;/code&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-deadlock-trap&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Deadlock Trap&lt;/h3&gt;
+&lt;p&gt;In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Objects as Condition Variables - wait, notify, &amp; notifyAll</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Every Java object has an &lt;strong&gt;Intrinsic Lock&lt;/strong&gt; (the monitor). Along with that lock, every object maintains a &lt;strong&gt;Wait Set&lt;/strong&gt;—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-objects&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Objects&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;wait()&lt;/code&gt; / &lt;code&gt;notify()&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;Condition&lt;/code&gt; (&lt;code&gt;await/signal&lt;/code&gt;)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Origin&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Part of &lt;code&gt;java.lang.Object&lt;/code&gt; (Available since JDK 1.0).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Part of &lt;code&gt;java.util.concurrent&lt;/code&gt; (Added in JDK 1.5).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Locking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Works with &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Works with &lt;code&gt;ReentrantLock&lt;/code&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Wait Sets&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only &lt;strong&gt;one&lt;/strong&gt; per object.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Multiple&lt;/strong&gt; per lock (e.g., &lt;code&gt;notFull&lt;/code&gt;, &lt;code&gt;notEmpty&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Efficiency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;notifyAll()&lt;/code&gt; wakes &lt;em&gt;everyone&lt;/em&gt;, even if they can&amp;rsquo;t proceed.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;signal()&lt;/code&gt; can target specific groups of threads.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-classic-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Classic Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;In this version, we don&amp;rsquo;t need a &lt;code&gt;ReentrantLock&lt;/code&gt;. We use the &lt;code&gt;synchronized&lt;/code&gt; keyword and the shared object itself to coordinate.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Parallel Streams &amp; ForkJoinPool</title>
+      <link>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</guid>
+      <description>&lt;p&gt;This section transitions from &lt;strong&gt;IO-bound&lt;/strong&gt; concurrency (waiting for databases or networks) back to &lt;strong&gt;CPU-bound&lt;/strong&gt; efficiency. If you have a massive dataset—like 10 million rows of sales data—and you need to calculate the total tax, you don&amp;rsquo;t want to use one CPU core while the other 15 sit idle.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Modern CPUs are &amp;ldquo;Multi-core.&amp;rdquo; A standard &lt;code&gt;for&lt;/code&gt; loop or a sequential &lt;code&gt;Stream&lt;/code&gt; in Java only uses &lt;strong&gt;one&lt;/strong&gt; thread. To use all your hardware&amp;rsquo;s power, you need to split the data into chunks, process them simultaneously, and then merge the results.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Race Conditions vs. Data Races</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;A &lt;strong&gt;Race Condition&lt;/strong&gt; is a flaw in the &lt;em&gt;timing&lt;/em&gt; or &lt;em&gt;ordering&lt;/em&gt; of events that leads to incorrect program behavior. A &lt;strong&gt;Data Race&lt;/strong&gt; is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.&lt;/p&gt;
+&lt;p&gt;You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid &lt;strong&gt;both&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Recursive Task</title>
+      <link>https://Aayush987.github.io/more-advanced-topics/recursivetask/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/more-advanced-topics/recursivetask/</guid>
+      <description>&lt;p&gt;While &lt;strong&gt;Parallel Streams&lt;/strong&gt; are the &amp;ldquo;automatic transmission&amp;rdquo; of the ForkJoinPool, &lt;strong&gt;&lt;code&gt;RecursiveTask&lt;/code&gt;&lt;/strong&gt; is the &amp;ldquo;manual transmission.&amp;rdquo; It gives you full control over how a large problem is sliced into smaller pieces and how those pieces are joined back together.&lt;/p&gt;
+&lt;p&gt;It is the core class you extend to implement the &lt;strong&gt;Divide and Conquer&lt;/strong&gt; strategy for tasks that return a result.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Sometimes your data doesn&amp;rsquo;t fit into a simple &lt;code&gt;Stream&lt;/code&gt;. For example, if you are:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ReentrantLock - tryLock &amp; Interruptibility</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ReentrantLock&lt;/code&gt; is a manual alternative to &lt;code&gt;synchronized&lt;/code&gt;. We use it when we need to break &lt;strong&gt;Coffman&amp;rsquo;s Conditions&lt;/strong&gt; for deadlocks. Specifically:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Breaking &amp;ldquo;No Preemption&amp;rdquo;:&lt;/strong&gt; With &lt;code&gt;tryLock()&lt;/code&gt;, if a thread can&amp;rsquo;t get the lock, it can walk away instead of hanging.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Breaking &amp;ldquo;Uninterruptible Wait&amp;rdquo;:&lt;/strong&gt; With &lt;code&gt;lockInterruptibly()&lt;/code&gt;, we can stop a waiting thread externally using &lt;code&gt;thread.interrupt()&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-vs-reentrantlock&#34;&gt;2. Comparison: &lt;code&gt;synchronized&lt;/code&gt; vs. &lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Flexibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Block-scoped only).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Can start lock in one method, end in another).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Fairness&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Random thread gets the lock).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Optional (Can grant lock to the longest-waiting thread).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Timeout Support&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Waits forever).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes (&lt;code&gt;tryLock&lt;/code&gt;)&lt;/strong&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Interruptibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Cannot be interrupted while waiting).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes (&lt;code&gt;lockInterruptibly&lt;/code&gt;)&lt;/strong&gt;.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple (Automatic cleanup).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Complex (Requires manual &lt;code&gt;unlock()&lt;/code&gt; in a &lt;code&gt;finally&lt;/code&gt; block).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-safe-transfer-no-deadlock&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Safe Transfer (No Deadlock)&lt;/h3&gt;
+&lt;p&gt;This snippet uses &lt;code&gt;tryLock()&lt;/code&gt; to attempt to acquire two locks. If it fails to get the second one, it &amp;ldquo;preempts&amp;rdquo; itself by releasing the first one and trying again later.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ReentrantLock - UI Application Example</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a UI application, responsiveness is king. If a background thread is performing a heavy database update or image processing, we don&amp;rsquo;t want the UI to &amp;ldquo;hang&amp;rdquo; while waiting for that data. &lt;code&gt;ReentrantLock&lt;/code&gt; with &lt;code&gt;tryLock()&lt;/code&gt; allows the UI thread to check: &lt;em&gt;&amp;ldquo;Is the data ready? No? Okay, I&amp;rsquo;ll keep the loading spinner spinning and try again in the next frame.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-blocking-vs-non-blocking-ui&#34;&gt;2. Comparison: Blocking vs. Non-Blocking UI&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt; (Blocking)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock.tryLock()&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;User Experience&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;App freezes (Not Responding) until lock is free.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;App remains responsive; can show a &amp;ldquo;Busy&amp;rdquo; message.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread Behavior&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;UI Thread is suspended by the OS.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;UI Thread continues its loop, handling other clicks.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Timeout Support&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;None.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Can try for $X$ milliseconds and then give up.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-responsive-ui&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Responsive UI&lt;/h3&gt;
+&lt;p&gt;Imagine a Dashboard that updates every second. If the &amp;ldquo;Database Thread&amp;rdquo; is currently writing to the shared &lt;code&gt;PriceData&lt;/code&gt; object, the UI thread shouldn&amp;rsquo;t wait; it should just skip this update or show the old data.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ReentrantReadWriteLock &amp; Database Implementation</title>
+      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Standard locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) are &lt;strong&gt;Mutual Exclusion&lt;/strong&gt; locks—they don&amp;rsquo;t care if a thread is reading or writing; they block everyone else.
+&lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &amp;ldquo;Mutual Exclusion&amp;rdquo; when a thread needs to &lt;strong&gt;write&lt;/strong&gt; (modify) the data.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-reentrantlock-vs-readwritelock&#34;&gt;2. Comparison: ReentrantLock vs. ReadWriteLock&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantLock&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;ReentrantReadWriteLock&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Read/Read&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt; (One at a time).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Non-Blocking&lt;/strong&gt; (Infinite simultaneous readers).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Read/Write&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Reader waits for Writer).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Write/Write&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Only one Writer at a time).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Best Use Case&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;General purpose, frequent updates.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Databases, Caches, &amp;ldquo;Read-Heavy&amp;rdquo; metadata.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-a-simple-database&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: A Simple Database&lt;/h3&gt;
+&lt;p&gt;In this example, we create a &lt;code&gt;SimpleDatabase&lt;/code&gt; where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Resource Sharing &amp; Critical Sections (Deep Dive)</title>
+      <link>https://Aayush987.github.io/data-sharing-between-threads/resourcesharing_introtocriticalsection/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/data-sharing-between-threads/resourcesharing_introtocriticalsection/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In multithreading, a &lt;strong&gt;Critical Section&lt;/strong&gt; is any segment of code that accesses a shared resource (like a variable, a file, or a database connection) where at least one thread is performing a &lt;strong&gt;write&lt;/strong&gt; operation.&lt;/p&gt;
+&lt;p&gt;The problem is that most high-level operations (like &lt;code&gt;count++&lt;/code&gt;) are not &lt;strong&gt;atomic&lt;/strong&gt;. To the CPU, &lt;code&gt;count++&lt;/code&gt; is actually three distinct steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Load:&lt;/strong&gt; Move the value from the Main Memory (Heap) into a CPU Register.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Increment:&lt;/strong&gt; Add 1 to the value inside the Register.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Store:&lt;/strong&gt; Move the new value from the Register back to Main Memory.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If Thread A is &amp;ldquo;paused&amp;rdquo; (context-switched) after Step 2, and Thread B performs all three steps, Thread A will eventually wake up and overwrite Thread B&amp;rsquo;s work with an outdated value. This is a &lt;strong&gt;Race Condition&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Semaphore - Scalable Producer-Consumer</title>
+      <link>https://Aayush987.github.io/inter-thread-communication/semaphore/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/inter-thread-communication/semaphore/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;A standard &lt;code&gt;Mutex&lt;/code&gt; or &lt;code&gt;synchronized&lt;/code&gt; block only allows &lt;strong&gt;one&lt;/strong&gt; thread at a time. A &lt;strong&gt;Semaphore&lt;/strong&gt;, however, maintains a set of &lt;strong&gt;permits&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It is used to limit the number of concurrent threads accessing a specific resource (e.g., only 5 database connections allowed).&lt;/li&gt;
+&lt;li&gt;In a &lt;strong&gt;Producer-Consumer&lt;/strong&gt; scenario, we use it to signal when &amp;ldquo;Space is Available&amp;rdquo; (for the producer) and when &amp;ldquo;Items are Available&amp;rdquo; (for the consumer).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-mutex-vs-semaphore&#34;&gt;2. Comparison: Mutex vs. Semaphore&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Mutex (or Binary Semaphore)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Counting Semaphore&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Permit Count&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Exactly 1.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;$N$ (User-defined).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Ownership&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only the thread that locked it can unlock it.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;No ownership.&lt;/strong&gt; Any thread can release a permit.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Primary Use&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Protecting a Critical Section (Safety).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Signalling and Resource Throttling (Coordination).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Analogy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A bathroom with one key.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A parking lot with $N$ spots.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-semaphore-based-producer-consumer&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Semaphore-Based Producer-Consumer&lt;/h3&gt;
+&lt;p&gt;This implementation uses two semaphores to coordinate a shared buffer. One tracks &amp;ldquo;Full&amp;rdquo; slots and the other tracks &amp;ldquo;Empty&amp;rdquo; slots.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Stack vs. Heap Memory Regions</title>
+      <link>https://Aayush987.github.io/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a multithreaded application, we need to know where data lives to understand its visibility. If data is on the &lt;strong&gt;Stack&lt;/strong&gt;, it is private and safe. If data is on the &lt;strong&gt;Heap&lt;/strong&gt;, it is shared and potentially dangerous. This distinction determines whether we need synchronization (locks/mutexes) or if the code is &amp;ldquo;thread-safe&amp;rdquo; by design.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic&#34;&gt;2. Visual Logic&lt;/h3&gt;
+&lt;p&gt;Every thread gets its own private &lt;strong&gt;Stack&lt;/strong&gt;, but all threads share a single, massive &lt;strong&gt;Heap&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The 4 Conditions for Deadlock (Coffman’s Conditions)</title>
+      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</guid>
+      <description>&lt;h3 id=&#34;1-mutual-exclusion&#34;&gt;1. Mutual Exclusion&lt;/h3&gt;
+&lt;p&gt;Only one thread can have exclusive access to a resource at any given time. If a second thread tries to access that resource, it must wait until the first thread releases it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If resources were sharable (like a Read-Only file), there would be no waiting and no deadlock.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-hold-and-wait&#34;&gt;2. Hold and Wait&lt;/h3&gt;
+&lt;p&gt;A thread is already holding at least one resource and is waiting to acquire additional resources that are currently being held by other threads.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Per Task / Thread Per Request Model</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a standard web application, a &amp;ldquo;task&amp;rdquo; is usually a single HTTP request.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Goal:&lt;/strong&gt; Isolate users from each other. If User A’s request takes 10 seconds to process a heavy database query, User B should still get their response in 100ms on a different thread.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Implementation:&lt;/strong&gt; The server maintains a &amp;ldquo;Thread Pool.&amp;rdquo; When a request arrives, the &amp;ldquo;Boss&amp;rdquo; thread grabs a &amp;ldquo;Worker&amp;rdquo; thread from the pool, hands it the socket, and says, &amp;ldquo;Call me when you&amp;rsquo;re done.&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-one-thread-vs-thread-pool-thread-per-task&#34;&gt;2. Comparison: One Thread vs. Thread Pool (Thread-Per-Task)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Single Threaded&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Thread-Per-Task (Pool)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Concurrency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;None (One at a time).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (N tasks at a time).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Isolation&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One crash kills the server.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One crash only kills that thread.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Throughput&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Very Low.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Parallel processing).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One slow DB call stops everyone.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only that specific worker thread is blocked.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-executor-based-web-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Executor-Based Web Server&lt;/h3&gt;
+&lt;p&gt;Instead of creating a &lt;code&gt;new Thread()&lt;/code&gt; every time (which is slow), we use a &lt;code&gt;FixedThreadPool&lt;/code&gt; to reuse existing threads.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>UseCase Scenario For Reentrant &amp; ReentrantReadWrite Lock</title>
+      <link>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
+      <description>&lt;p&gt;The choice between a standard &lt;strong&gt;ReentrantLock&lt;/strong&gt; and a &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; usually comes down to one metric: the &lt;strong&gt;Read-to-Write ratio&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;If your threads are mostly looking at data without changing it, a standard lock creates a massive, unnecessary bottleneck. If your threads are constantly updating data, the overhead of a ReadWriteLock actually makes it slower than a simple lock.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-scenario-a-high-contention-updates-use-reentrantlock&#34;&gt;1. Scenario A: High-Contention Updates (Use &lt;code&gt;ReentrantLock&lt;/code&gt;)&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Scenario:&lt;/strong&gt; A &lt;strong&gt;Counter&lt;/strong&gt; or a &lt;strong&gt;Bank Account&lt;/strong&gt; where every single thread that enters is there to modify the value (e.g., &lt;code&gt;increment()&lt;/code&gt; or &lt;code&gt;deposit()&lt;/code&gt;).&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Virtual Threads - Best Practices</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
+      <description>&lt;h3 id=&#34;1-dont-pool-virtual-threads&#34;&gt;1. Don&amp;rsquo;t Pool Virtual Threads&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;The Old Rule:&lt;/strong&gt; Threads are expensive; create a &lt;code&gt;FixedThreadPool&lt;/code&gt; and reuse them.
+&lt;strong&gt;The New Rule:&lt;/strong&gt; Virtual threads are disposable objects. Create a new one for every single task.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Why?&lt;/strong&gt; A pool&amp;rsquo;s purpose is to limit resource usage and avoid the cost of thread creation. Since Virtual Threads cost almost nothing to create and take up very little memory, pooling them just adds unnecessary complexity and contention.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// DO THIS (New for every task)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;try&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;var&lt;/span&gt; executor &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Executors.&lt;span style=&#34;color:#a6e22e&#34;&gt;newVirtualThreadPerTaskExecutor&lt;/span&gt;()) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    executor.&lt;span style=&#34;color:#a6e22e&#34;&gt;submit&lt;/span&gt;(() &lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt; doWork());
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// DON&amp;#39;T DO THIS (Pooling virtual threads is an anti-pattern)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;// ExecutorService pool = Executors.newFixedThreadPool(100); &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id=&#34;2-avoid-pinning-replace-synchronized&#34;&gt;2. Avoid &amp;ldquo;Pinning&amp;rdquo; (Replace &lt;code&gt;synchronized&lt;/code&gt;)&lt;/h3&gt;
+&lt;p&gt;As we discussed, &lt;strong&gt;Pinning&lt;/strong&gt; happens when a Virtual Thread cannot be &amp;ldquo;unmounted&amp;rdquo; from its Carrier Thread during a blocking operation. This usually happens inside &lt;code&gt;synchronized&lt;/code&gt; blocks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Virtual Threads - Deep Dive</title>
+      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
+      <description>&lt;p&gt;To understand what Virtual Threads do under the hood, we have to look at the &amp;ldquo;Magic&amp;rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.&lt;/p&gt;
+&lt;p&gt;Before Java 21, a &lt;strong&gt;Java Thread&lt;/strong&gt; was just a thin wrapper around an &lt;strong&gt;OS Thread&lt;/strong&gt;. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-architecture-mn-scheduling&#34;&gt;1. The Architecture: M:N Scheduling&lt;/h3&gt;
+&lt;p&gt;Virtual Threads introduce a &amp;ldquo;layered&amp;rdquo; approach. Instead of a 1:1 relationship with the OS, we now have an &lt;strong&gt;M:N relationship&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Joining Threads</title>
+      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</guid>
+      <description>&lt;h1 id=&#34;thread-coordination---part-2-joining-threads&#34;&gt;Thread Coordination - Part 2: Joining Threads&lt;/h1&gt;
+&lt;h2 id=&#34;1-the-problem-the-race-to-the-finish&#34;&gt;1. The Problem: The &amp;ldquo;Race&amp;rdquo; to the Finish&lt;/h2&gt;
+&lt;p&gt;When you start a thread, it runs independently. If the &lt;code&gt;main&lt;/code&gt; thread needs the result of &lt;code&gt;Thread-A&lt;/code&gt; to perform a calculation, &lt;code&gt;main&lt;/code&gt; might finish before &lt;code&gt;Thread-A&lt;/code&gt; even starts, leading to &lt;code&gt;null&lt;/code&gt; results or crashes.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-the-solution-threadjoin&#34;&gt;2. The Solution: &lt;code&gt;thread.join()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;join()&lt;/code&gt; method allows the calling thread (e.g., &lt;code&gt;main&lt;/code&gt;) to go into a &lt;strong&gt;Waiting&lt;/strong&gt; state until the target thread finishes its execution.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Inheritance</title>
+      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</guid>
+      <description>&lt;h1 id=&#34;thread-creation---part-2-thread-inheritance&#34;&gt;Thread Creation - Part 2: Thread Inheritance&lt;/h1&gt;
+&lt;h2 id=&#34;1-the-concept-extending-the-thread-class&#34;&gt;1. The Concept: Extending the Thread Class&lt;/h2&gt;
+&lt;p&gt;Instead of passing a &lt;code&gt;Runnable&lt;/code&gt; object to a new Thread instance, we create a specialized class that &lt;strong&gt;is&lt;/strong&gt; a Thread. This is done using the &lt;code&gt;extends&lt;/code&gt; keyword.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Mechanism:&lt;/strong&gt; Create a subclass of &lt;code&gt;Thread&lt;/code&gt; and override the &lt;code&gt;run()&lt;/code&gt; method.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Usage:&lt;/strong&gt; You instantiate your subclass and call &lt;code&gt;.start()&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-the-golden-snippet-inheritance-pattern&#34;&gt;2. The &amp;ldquo;Golden&amp;rdquo; Snippet (Inheritance Pattern)&lt;/h2&gt;
+&lt;p&gt;This approach encapsulates the thread logic and the data it needs into a single object.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Introduction</title>
+      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</guid>
+      <description>&lt;h1 id=&#34;thread-creation-part-1-capabilites--debugging&#34;&gt;Thread Creation Part 1 Capabilites &amp;amp; Debugging&lt;/h1&gt;
+&lt;h2 id=&#34;1-core-concept-thread-vs-process&#34;&gt;1. Core Concept: Thread vs. Process&lt;/h2&gt;
+&lt;p&gt;Before diving into code, it is vital to understand the &amp;ldquo;Container&amp;rdquo; relationship:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Process:&lt;/strong&gt; An instance of a running program. It has its own memory space (Heap, Stack, etc.).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Thread:&lt;/strong&gt; A unit of execution within a process. Multiple threads share the same &lt;strong&gt;Heap&lt;/strong&gt; but have their own &lt;strong&gt;Stack&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-thread-capabilities&#34;&gt;2. Thread Capabilities&lt;/h2&gt;
+&lt;p&gt;Threads allow us to perform multiple tasks concurrently. Key capabilities include:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Termination &amp; Daemon Threads</title>
+      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
+      <description>&lt;h1 id=&#34;thread-termination--daemon-threads&#34;&gt;Thread Termination &amp;amp; Daemon Threads&lt;/h1&gt;
+&lt;h2 id=&#34;1-why-is-termination-tricky&#34;&gt;1. Why is Termination Tricky?&lt;/h2&gt;
+&lt;p&gt;Threads consume resources (Memory, CPU, File Handles). If a thread finishes its task but stays alive, it&amp;rsquo;s a &lt;strong&gt;Resource Leak&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We cannot use the &lt;code&gt;stop()&lt;/code&gt; method (it is deprecated and dangerous).&lt;/li&gt;
+&lt;li&gt;We must use &lt;strong&gt;Cooperative Termination&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-method-1-the-interrupt-signal&#34;&gt;2. Method 1: The Interrupt Signal&lt;/h2&gt;
+&lt;p&gt;Interrupting is a way for one thread to signal another: &amp;ldquo;Please stop what you are doing.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;scenario-a-thread-is-blocking-sleepingwaiting&#34;&gt;Scenario A: Thread is Blocking (Sleeping/Waiting)&lt;/h3&gt;
+&lt;p&gt;If a thread is executing a method like &lt;code&gt;Thread.sleep()&lt;/code&gt; or &lt;code&gt;wait()&lt;/code&gt;, it will throw an &lt;code&gt;InterruptedException&lt;/code&gt; when interrupted.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://Aayush987.github.io/performance-optimization/optimization_forlatency_imageoptimization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/performance-optimization/optimization_forlatency_imageoptimization/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

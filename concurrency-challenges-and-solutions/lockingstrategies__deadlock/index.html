@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Locking Strategies &amp; Deadlocks | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.
+2. Comparison: Coarse-Grained vs. Fine-Grained Locking
+
+  
+      
+          Feature
+          Coarse-Grained
+          Fine-Grained
+      
+  
+  
+      
+          Simplicity
+          High (One lock for everything).
+          Low (Many locks to manage).
+      
+      
+          Performance
+          Low (Threads queue up unnecessarily).
+          High (Threads only block if using the same resource).
+      
+      
+          Risk of Deadlock
+          Zero (You can&rsquo;t deadlock with one lock).
+          High (Requires strict discipline).
+      
+      
+          Example
+          synchronized(database)
+          lockTableA, lockTableB
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: The Deadlock Trap
+In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="Locking Strategies & Deadlocks">
+  <meta property="og:description" content="1. The “Why” As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.
+2. Comparison: Coarse-Grained vs. Fine-Grained Locking Feature Coarse-Grained Fine-Grained Simplicity High (One lock for everything). Low (Many locks to manage). Performance Low (Threads queue up unnecessarily). High (Threads only block if using the same resource). Risk of Deadlock Zero (You can’t deadlock with one lock). High (Requires strict discipline). Example synchronized(database) lockTableA, lockTableB 3. The “Golden” Snippet: The Deadlock Trap In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="concurrency-challenges-and-solutions">
+    <meta property="article:published_time" content="2026-03-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-27T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Locking Strategies & Deadlocks">
+  <meta name="twitter:description" content="1. The “Why” As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.
+2. Comparison: Coarse-Grained vs. Fine-Grained Locking Feature Coarse-Grained Fine-Grained Simplicity High (One lock for everything). Low (Many locks to manage). Performance Low (Threads queue up unnecessarily). High (Threads only block if using the same resource). Risk of Deadlock Zero (You can’t deadlock with one lock). High (Requires strict discipline). Example synchronized(database) lockTableA, lockTableB 3. The “Golden” Snippet: The Deadlock Trap In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Concurrency Challenges \u0026 Solutions",
+      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Locking Strategies \u0026 Deadlocks",
+      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Locking Strategies \u0026 Deadlocks",
+  "name": "Locking Strategies \u0026 Deadlocks",
+  "description": "1. The \u0026ldquo;Why\u0026rdquo; As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.\n2. Comparison: Coarse-Grained vs. Fine-Grained Locking Feature Coarse-Grained Fine-Grained Simplicity High (One lock for everything). Low (Many locks to manage). Performance Low (Threads queue up unnecessarily). High (Threads only block if using the same resource). Risk of Deadlock Zero (You can\u0026rsquo;t deadlock with one lock). High (Requires strict discipline). Example synchronized(database) lockTableA, lockTableB 3. The \u0026ldquo;Golden\u0026rdquo; Snippet: The Deadlock Trap In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "1. The “Why” As applications grow, a single lock (like synchronized(this)) becomes a bottleneck. To improve performance, we use Fine-Grained Locking (multiple locks for different resources). However, the moment you have more than one lock, the Order of Acquisition matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.\n2. Comparison: Coarse-Grained vs. Fine-Grained Locking Feature Coarse-Grained Fine-Grained Simplicity High (One lock for everything). Low (Many locks to manage). Performance Low (Threads queue up unnecessarily). High (Threads only block if using the same resource). Risk of Deadlock Zero (You can’t deadlock with one lock). High (Requires strict discipline). Example synchronized(database) lockTableA, lockTableB 3. The “Golden” Snippet: The Deadlock Trap In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.\npublic class DeadlockDemo { private final Object lockA = new Object(); private final Object lockB = new Object(); public void processTransaction1() { synchronized (lockA) { // Thread 1 takes Lock A System.out.println(\"Thread 1: Holding lock A...\"); try { Thread.sleep(50); } catch (InterruptedException e) {} System.out.println(\"Thread 1: Waiting for lock B...\"); synchronized (lockB) { // Thread 1 waits for Lock B System.out.println(\"Thread 1: Acquired A \u0026 B!\"); } } } public void processTransaction2() { synchronized (lockB) { // Thread 2 takes Lock B System.out.println(\"Thread 2: Holding lock B...\"); try { Thread.sleep(50); } catch (InterruptedException e) {} System.out.println(\"Thread 2: Waiting for lock A...\"); synchronized (lockA) { // Thread 2 waits for Lock A System.out.println(\"Thread 2: Acquired B \u0026 A!\"); } } } } Code Explanation: The Standoff: Thread 1 grabs lockA. Thread 2 grabs lockB. The Circular Wait: Thread 1 now wants lockB (which Thread 2 is holding). Thread 2 now wants lockA (which Thread 1 is holding). The Result: Neither thread can proceed. They will sit there forever. The JVM will not throw an error; the CPU usage will drop to 0%, and the app will simply stop responding. Example Output: Thread 1: Holding lock A... Thread 2: Holding lock B... Thread 1: Waiting for lock B... Thread 2: Waiting for lock A... ... (Infinite Silence) ... 4. How to Prevent Deadlocks There are three main strategies to avoid or break a deadlock:\nStrict Lock Ordering (Recommended): Always acquire locks in the same order. If both threads always lock A then B, a deadlock is physically impossible. Lock Timeout (tryLock): Instead of synchronized, use ReentrantLock.tryLock(timeout). If a thread can’t get the lock in 5 seconds, it gives up, releases its own locks, and tries again later. Deadlock Detection: Using tools like jconsole or jstack to see the “Thread Dump” and identify which threads are stuck. 5. The Gotchas The Hidden Lock: Sometimes you don’t realize you’re locking. Calling a synchronized method inside another synchronized method on a different object is a hidden multi-lock scenario. The “Dining Philosophers” Problem: A classic interview question based on this exact concept. The solution is always to break the “Circular Wait” condition. Locking on Strings/Integers: Never use synchronized(\"myLock\"). Java “interns” strings, meaning two unrelated parts of your code might accidentally share the same lock object, leading to mysterious deadlocks. ",
+  "wordCount" : "523",
+  "inLanguage": "en",
+  "datePublished": "2026-03-27T00:00:00Z",
+  "dateModified": "2026-03-27T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Locking Strategies &amp; Deadlocks
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>As applications grow, a single lock (like <code>synchronized(this)</code>) becomes a bottleneck. To improve performance, we use <strong>Fine-Grained Locking</strong> (multiple locks for different resources). However, the moment you have more than one lock, the <strong>Order of Acquisition</strong> matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.</p>
+<h3 id="2-comparison-coarse-grained-vs-fine-grained-locking">2. Comparison: Coarse-Grained vs. Fine-Grained Locking<a hidden class="anchor" aria-hidden="true" href="#2-comparison-coarse-grained-vs-fine-grained-locking">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left">Coarse-Grained</th>
+          <th style="text-align: left">Fine-Grained</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Simplicity</strong></td>
+          <td style="text-align: left">High (One lock for everything).</td>
+          <td style="text-align: left">Low (Many locks to manage).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Performance</strong></td>
+          <td style="text-align: left">Low (Threads queue up unnecessarily).</td>
+          <td style="text-align: left">High (Threads only block if using the same resource).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Risk of Deadlock</strong></td>
+          <td style="text-align: left">Zero (You can&rsquo;t deadlock with one lock).</td>
+          <td style="text-align: left">High (Requires strict discipline).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Example</strong></td>
+          <td style="text-align: left"><code>synchronized(database)</code></td>
+          <td style="text-align: left"><code>lockTableA</code>, <code>lockTableB</code></td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-the-deadlock-trap">3. The &ldquo;Golden&rdquo; Snippet: The Deadlock Trap<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-the-deadlock-trap">#</a></h3>
+<p>In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DeadlockDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Object lockA <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Object lockB <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Object();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processTransaction1</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">synchronized</span> (lockA) { <span style="color:#75715e">// Thread 1 takes Lock A</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 1: Holding lock A...&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> { Thread.<span style="color:#a6e22e">sleep</span>(50); } <span style="color:#66d9ef">catch</span> (InterruptedException e) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 1: Waiting for lock B...&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> (lockB) { <span style="color:#75715e">// Thread 1 waits for Lock B</span>
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 1: Acquired A &amp; B!&#34;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processTransaction2</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">synchronized</span> (lockB) { <span style="color:#75715e">// Thread 2 takes Lock B</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 2: Holding lock B...&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> { Thread.<span style="color:#a6e22e">sleep</span>(50); } <span style="color:#66d9ef">catch</span> (InterruptedException e) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 2: Waiting for lock A...&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> (lockA) { <span style="color:#75715e">// Thread 2 waits for Lock A</span>
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thread 2: Acquired B &amp; A!&#34;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong>The Standoff:</strong> Thread 1 grabs <code>lockA</code>. Thread 2 grabs <code>lockB</code>.</li>
+<li><strong>The Circular Wait:</strong> Thread 1 now wants <code>lockB</code> (which Thread 2 is holding). Thread 2 now wants <code>lockA</code> (which Thread 1 is holding).</li>
+<li><strong>The Result:</strong> Neither thread can proceed. They will sit there forever. The JVM will not throw an error; the CPU usage will drop to 0%, and the app will simply stop responding.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Thread 1: Holding lock A...
+</span></span><span style="display:flex;"><span>Thread 2: Holding lock B...
+</span></span><span style="display:flex;"><span>Thread 1: Waiting for lock B...
+</span></span><span style="display:flex;"><span>Thread 2: Waiting for lock A...
+</span></span><span style="display:flex;"><span>... (Infinite Silence) ...
+</span></span></code></pre></div><hr>
+<h3 id="4-how-to-prevent-deadlocks">4. How to Prevent Deadlocks<a hidden class="anchor" aria-hidden="true" href="#4-how-to-prevent-deadlocks">#</a></h3>
+<p>There are three main strategies to avoid or break a deadlock:</p>
+<ol>
+<li><strong>Strict Lock Ordering (Recommended):</strong> Always acquire locks in the same order. If both threads always lock <code>A</code> then <code>B</code>, a deadlock is physically impossible.</li>
+<li><strong>Lock Timeout (<code>tryLock</code>):</strong> Instead of <code>synchronized</code>, use <code>ReentrantLock.tryLock(timeout)</code>. If a thread can&rsquo;t get the lock in 5 seconds, it gives up, releases its own locks, and tries again later.</li>
+<li><strong>Deadlock Detection:</strong> Using tools like <code>jconsole</code> or <code>jstack</code> to see the &ldquo;Thread Dump&rdquo; and identify which threads are stuck.</li>
+</ol>
+<hr>
+<h3 id="5-the-gotchas">5. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#5-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The Hidden Lock:</strong> Sometimes you don&rsquo;t realize you&rsquo;re locking. Calling a <code>synchronized</code> method inside another <code>synchronized</code> method on a different object is a hidden multi-lock scenario.</li>
+<li><strong>The &ldquo;Dining Philosophers&rdquo; Problem:</strong> A classic interview question based on this exact concept. The solution is always to break the &ldquo;Circular Wait&rdquo; condition.</li>
+<li><strong>Locking on Strings/Integers:</strong> Never use <code>synchronized(&quot;myLock&quot;)</code>. Java &ldquo;interns&rdquo; strings, meaning two unrelated parts of your code might accidentally share the same lock object, leading to mysterious deadlocks.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

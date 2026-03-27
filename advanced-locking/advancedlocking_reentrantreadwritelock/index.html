@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>ReentrantReadWriteLock &amp; Database Implementation | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+Standard locks (synchronized, ReentrantLock) are Mutual Exclusion locks—they don&rsquo;t care if a thread is reading or writing; they block everyone else.
+ReentrantReadWriteLock recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &ldquo;Mutual Exclusion&rdquo; when a thread needs to write (modify) the data.
+2. Comparison: ReentrantLock vs. ReadWriteLock
+
+  
+      
+          Feature
+          ReentrantLock
+          ReentrantReadWriteLock
+      
+  
+  
+      
+          Read/Read
+          Blocking (One at a time).
+          Non-Blocking (Infinite simultaneous readers).
+      
+      
+          Read/Write
+          Blocking.
+          Blocking (Reader waits for Writer).
+      
+      
+          Write/Write
+          Blocking.
+          Blocking (Only one Writer at a time).
+      
+      
+          Best Use Case
+          General purpose, frequent updates.
+          Databases, Caches, &ldquo;Read-Heavy&rdquo; metadata.
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: A Simple Database
+In this example, we create a SimpleDatabase where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.">
+<meta name="author" content="">
+<link rel="canonical" href="https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/">
+  <meta property="og:site_name" content="Study Notes">
+  <meta property="og:title" content="ReentrantReadWriteLock & Database Implementation">
+  <meta property="og:description" content="1. The “Why” Standard locks (synchronized, ReentrantLock) are Mutual Exclusion locks—they don’t care if a thread is reading or writing; they block everyone else. ReentrantReadWriteLock recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces “Mutual Exclusion” when a thread needs to write (modify) the data.
+2. Comparison: ReentrantLock vs. ReadWriteLock Feature ReentrantLock ReentrantReadWriteLock Read/Read Blocking (One at a time). Non-Blocking (Infinite simultaneous readers). Read/Write Blocking. Blocking (Reader waits for Writer). Write/Write Blocking. Blocking (Only one Writer at a time). Best Use Case General purpose, frequent updates. Databases, Caches, “Read-Heavy” metadata. 3. The “Golden” Snippet: A Simple Database In this example, we create a SimpleDatabase where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="advanced-locking">
+    <meta property="article:published_time" content="2026-03-27T00:00:00+00:00">
+    <meta property="article:modified_time" content="2026-03-27T00:00:00+00:00">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ReentrantReadWriteLock & Database Implementation">
+  <meta name="twitter:description" content="1. The “Why” Standard locks (synchronized, ReentrantLock) are Mutual Exclusion locks—they don’t care if a thread is reading or writing; they block everyone else. ReentrantReadWriteLock recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces “Mutual Exclusion” when a thread needs to write (modify) the data.
+2. Comparison: ReentrantLock vs. ReadWriteLock Feature ReentrantLock ReentrantReadWriteLock Read/Read Blocking (One at a time). Non-Blocking (Infinite simultaneous readers). Read/Write Blocking. Blocking (Reader waits for Writer). Write/Write Blocking. Blocking (Only one Writer at a time). Best Use Case General purpose, frequent updates. Databases, Caches, “Read-Heavy” metadata. 3. The “Golden” Snippet: A Simple Database In this example, we create a SimpleDatabase where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Advanced Locking",
+      "item": "https://Aayush987.github.io/advanced-locking/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "ReentrantReadWriteLock \u0026 Database Implementation",
+      "item": "https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ReentrantReadWriteLock \u0026 Database Implementation",
+  "name": "ReentrantReadWriteLock \u0026 Database Implementation",
+  "description": "1. The \u0026ldquo;Why\u0026rdquo; Standard locks (synchronized, ReentrantLock) are Mutual Exclusion locks—they don\u0026rsquo;t care if a thread is reading or writing; they block everyone else. ReentrantReadWriteLock recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces \u0026ldquo;Mutual Exclusion\u0026rdquo; when a thread needs to write (modify) the data.\n2. Comparison: ReentrantLock vs. ReadWriteLock Feature ReentrantLock ReentrantReadWriteLock Read/Read Blocking (One at a time). Non-Blocking (Infinite simultaneous readers). Read/Write Blocking. Blocking (Reader waits for Writer). Write/Write Blocking. Blocking (Only one Writer at a time). Best Use Case General purpose, frequent updates. Databases, Caches, \u0026ldquo;Read-Heavy\u0026rdquo; metadata. 3. The \u0026ldquo;Golden\u0026rdquo; Snippet: A Simple Database In this example, we create a SimpleDatabase where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "1. The “Why” Standard locks (synchronized, ReentrantLock) are Mutual Exclusion locks—they don’t care if a thread is reading or writing; they block everyone else. ReentrantReadWriteLock recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces “Mutual Exclusion” when a thread needs to write (modify) the data.\n2. Comparison: ReentrantLock vs. ReadWriteLock Feature ReentrantLock ReentrantReadWriteLock Read/Read Blocking (One at a time). Non-Blocking (Infinite simultaneous readers). Read/Write Blocking. Blocking (Reader waits for Writer). Write/Write Blocking. Blocking (Only one Writer at a time). Best Use Case General purpose, frequent updates. Databases, Caches, “Read-Heavy” metadata. 3. The “Golden” Snippet: A Simple Database In this example, we create a SimpleDatabase where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.\nimport java.util.TreeMap; import java.util.concurrent.locks.ReentrantReadWriteLock; import java.util.concurrent.locks.Lock; public class SimpleDatabase { private TreeMap\u003cInteger, Integer\u003e inventory = new TreeMap\u003c\u003e(); private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(); // The \"Read\" side of the lock private Lock readLock = rwLock.readLock(); // The \"Write\" side of the lock private Lock writeLock = rwLock.writeLock(); public int getPrice(int productId) { readLock.lock(); try { // Multiple threads can be here at the same time return inventory.getOrDefault(productId, 0); } finally { readLock.unlock(); } } public void updatePrice(int productId, int newPrice) { writeLock.lock(); try { // While a thread is here, NO ONE can read or write inventory.put(productId, newPrice); } finally { writeLock.unlock(); } } } Code Explanation: The Lock Split: We initialize one ReentrantReadWriteLock but extract two different Lock objects from it: readLock() and writeLock(). Shared Reads: When readLock.lock() is called, the JVM checks: “Is anyone writing?” If no, the thread enters. Ten other threads can call readLock.lock() and enter simultaneously. Exclusive Writes: When writeLock.lock() is called, the thread waits until all current readers have finished and unlocked. Once the writer is inside, any new readers are blocked until the writer is done. Example Output: Thread-Reader-1: Reading Price... (Success) Thread-Reader-2: Reading Price... (Success - Parallel with Reader 1) Thread-Writer: Requesting Write Lock... (Waiting for Readers to finish) Thread-Reader-3: Requesting Read Lock... (Blocked by waiting Writer) Thread-Writer: Write Lock Acquired. Updating... Thread-Writer: Released. Thread-Reader-3: Read Lock Acquired. Price is now updated. 4. The Gotchas Write Starvation: If you have a constant stream of readers, a writer might wait forever to get in. Java’s ReentrantReadWriteLock handles this by prioritizing the “next in line,” but in very heavy read systems, writers can still struggle. No “Upgrade” directly: You cannot “upgrade” a lock from Read to Write while holding the Read lock (this causes a Deadlock). You must unlock() the read lock and then lock() the write lock. Complexity Overhead: If your “Read” operation is extremely fast (like just reading a single int), the overhead of managing a ReadWriteLock might actually be slower than a simple synchronized block. Use this only when the “Read” operation takes some time or happens extremely frequently. ",
+  "wordCount" : "480",
+  "inLanguage": "en",
+  "datePublished": "2026-03-27T00:00:00Z",
+  "dateModified": "2026-03-27T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Study Notes",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://Aayush987.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      ReentrantReadWriteLock &amp; Database Implementation
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Standard locks (<code>synchronized</code>, <code>ReentrantLock</code>) are <strong>Mutual Exclusion</strong> locks—they don&rsquo;t care if a thread is reading or writing; they block everyone else.
+<strong>ReentrantReadWriteLock</strong> recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &ldquo;Mutual Exclusion&rdquo; when a thread needs to <strong>write</strong> (modify) the data.</p>
+<h3 id="2-comparison-reentrantlock-vs-readwritelock">2. Comparison: ReentrantLock vs. ReadWriteLock<a hidden class="anchor" aria-hidden="true" href="#2-comparison-reentrantlock-vs-readwritelock">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>ReentrantLock</code></th>
+          <th style="text-align: left"><code>ReentrantReadWriteLock</code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Read/Read</strong></td>
+          <td style="text-align: left"><strong>Blocking</strong> (One at a time).</td>
+          <td style="text-align: left"><strong>Non-Blocking</strong> (Infinite simultaneous readers).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Read/Write</strong></td>
+          <td style="text-align: left">Blocking.</td>
+          <td style="text-align: left">Blocking (Reader waits for Writer).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Write/Write</strong></td>
+          <td style="text-align: left">Blocking.</td>
+          <td style="text-align: left">Blocking (Only one Writer at a time).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Best Use Case</strong></td>
+          <td style="text-align: left">General purpose, frequent updates.</td>
+          <td style="text-align: left">Databases, Caches, &ldquo;Read-Heavy&rdquo; metadata.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-a-simple-database">3. The &ldquo;Golden&rdquo; Snippet: A Simple Database<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-a-simple-database">#</a></h3>
+<p>In this example, we create a <code>SimpleDatabase</code> where many threads can query prices at the same time, but an update thread can safely modify them without causing data races.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.TreeMap;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.ReentrantReadWriteLock;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.locks.Lock;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SimpleDatabase</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> TreeMap<span style="color:#f92672">&lt;</span>Integer, Integer<span style="color:#f92672">&gt;</span> inventory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TreeMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> ReentrantReadWriteLock rwLock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantReadWriteLock();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The &#34;Read&#34; side of the lock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Lock readLock <span style="color:#f92672">=</span> rwLock.<span style="color:#a6e22e">readLock</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The &#34;Write&#34; side of the lock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Lock writeLock <span style="color:#f92672">=</span> rwLock.<span style="color:#a6e22e">writeLock</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getPrice</span>(<span style="color:#66d9ef">int</span> productId) {
+</span></span><span style="display:flex;"><span>        readLock.<span style="color:#a6e22e">lock</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Multiple threads can be here at the same time</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> inventory.<span style="color:#a6e22e">getOrDefault</span>(productId, 0);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            readLock.<span style="color:#a6e22e">unlock</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">updatePrice</span>(<span style="color:#66d9ef">int</span> productId, <span style="color:#66d9ef">int</span> newPrice) {
+</span></span><span style="display:flex;"><span>        writeLock.<span style="color:#a6e22e">lock</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// While a thread is here, NO ONE can read or write</span>
+</span></span><span style="display:flex;"><span>            inventory.<span style="color:#a6e22e">put</span>(productId, newPrice);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            writeLock.<span style="color:#a6e22e">unlock</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong>The Lock Split:</strong> We initialize one <code>ReentrantReadWriteLock</code> but extract two different <code>Lock</code> objects from it: <code>readLock()</code> and <code>writeLock()</code>.</li>
+<li><strong>Shared Reads:</strong> When <code>readLock.lock()</code> is called, the JVM checks: &ldquo;Is anyone writing?&rdquo; If no, the thread enters. Ten other threads can call <code>readLock.lock()</code> and enter simultaneously.</li>
+<li><strong>Exclusive Writes:</strong> When <code>writeLock.lock()</code> is called, the thread waits until <strong>all</strong> current readers have finished and unlocked. Once the writer is inside, any new readers are blocked until the writer is done.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Thread-Reader-1: Reading Price... (Success)
+</span></span><span style="display:flex;"><span>Thread-Reader-2: Reading Price... (Success - Parallel with Reader 1)
+</span></span><span style="display:flex;"><span>Thread-Writer: Requesting Write Lock... (Waiting for Readers to finish)
+</span></span><span style="display:flex;"><span>Thread-Reader-3: Requesting Read Lock... (Blocked by waiting Writer)
+</span></span><span style="display:flex;"><span>Thread-Writer: Write Lock Acquired. Updating...
+</span></span><span style="display:flex;"><span>Thread-Writer: Released.
+</span></span><span style="display:flex;"><span>Thread-Reader-3: Read Lock Acquired. Price is now updated.
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>Write Starvation:</strong> If you have a constant stream of readers, a writer might wait forever to get in. Java&rsquo;s <code>ReentrantReadWriteLock</code> handles this by prioritizing the &ldquo;next in line,&rdquo; but in very heavy read systems, writers can still struggle.</li>
+<li><strong>No &ldquo;Upgrade&rdquo; directly:</strong> You cannot &ldquo;upgrade&rdquo; a lock from Read to Write while holding the Read lock (this causes a Deadlock). You must <code>unlock()</code> the read lock and then <code>lock()</code> the write lock.</li>
+<li><strong>Complexity Overhead:</strong> If your &ldquo;Read&rdquo; operation is extremely fast (like just reading a single <code>int</code>), the overhead of managing a <code>ReadWriteLock</code> might actually be slower than a simple <code>synchronized</code> block. Use this only when the &ldquo;Read&rdquo; operation takes some time or happens extremely frequently.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

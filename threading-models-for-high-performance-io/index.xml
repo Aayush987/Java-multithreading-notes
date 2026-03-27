@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Threading Models For High Performance IO on Study Notes</title>
+    <link>https://Aayush987.github.io/threading-models-for-high-performance-io/</link>
+    <description>Recent content in Threading Models For High Performance IO on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://Aayush987.github.io/threading-models-for-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Asynchronous, Non-Blocking IO - Thread-per-Core</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In the previous &amp;ldquo;Thread-per-Task&amp;rdquo; model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time &amp;ldquo;Context Switching&amp;rdquo; (saving the state of Thread 1 to load Thread 2). This is inefficient.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Thread-per-Core Goal:&lt;/strong&gt; Create exactly one thread for every physical CPU core. These threads &lt;strong&gt;never block&lt;/strong&gt;. If a thread needs to read from a socket and the data isn&amp;rsquo;t there, it doesn&amp;rsquo;t sleep; it moves to the next socket immediately.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Blocking IO</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Blocking IO&lt;/strong&gt; is the &amp;ldquo;classic&amp;rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If you have 1,000 users and each requires a blocking thread, you need 1,000 threads. Threads are expensive—they consume memory (Stack) and cause &amp;ldquo;Context Switching&amp;rdquo; overhead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-blocking-io-vs-non-blocking-io-nio&#34;&gt;2. Comparison: Blocking IO vs. Non-Blocking IO (NIO)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Blocking IO (BIO)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Non-Blocking IO (NIO)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread Behavior&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Thread &amp;ldquo;stops&amp;rdquo; and waits for data.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Thread &amp;ldquo;asks&amp;rdquo; and moves on if data isn&amp;rsquo;t ready.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Efficiency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High for single, long-lived connections.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High for thousands of concurrent connections.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complexity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple (Sequential code).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Requires Event Loops/Callbacks).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Scalability&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by Thread Count / Memory.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by CPU / Network Bandwidth.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-standard-blocking-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Standard Blocking Server&lt;/h3&gt;
+&lt;p&gt;This is a classic &amp;ldquo;One Thread Per Connection&amp;rdquo; model. It works fine for a few users, but it scales poorly.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Per Task / Thread Per Request Model</title>
+      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a standard web application, a &amp;ldquo;task&amp;rdquo; is usually a single HTTP request.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Goal:&lt;/strong&gt; Isolate users from each other. If User A’s request takes 10 seconds to process a heavy database query, User B should still get their response in 100ms on a different thread.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Implementation:&lt;/strong&gt; The server maintains a &amp;ldquo;Thread Pool.&amp;rdquo; When a request arrives, the &amp;ldquo;Boss&amp;rdquo; thread grabs a &amp;ldquo;Worker&amp;rdquo; thread from the pool, hands it the socket, and says, &amp;ldquo;Call me when you&amp;rsquo;re done.&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-one-thread-vs-thread-pool-thread-per-task&#34;&gt;2. Comparison: One Thread vs. Thread Pool (Thread-Per-Task)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Single Threaded&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Thread-Per-Task (Pool)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Concurrency&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;None (One at a time).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (N tasks at a time).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Isolation&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One crash kills the server.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One crash only kills that thread.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Throughput&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Very Low.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Parallel processing).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;One slow DB call stops everyone.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only that specific worker thread is blocked.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-executor-based-web-server&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Executor-Based Web Server&lt;/h3&gt;
+&lt;p&gt;Instead of creating a &lt;code&gt;new Thread()&lt;/code&gt; every time (which is slow), we use a &lt;code&gt;FixedThreadPool&lt;/code&gt; to reuse existing threads.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
