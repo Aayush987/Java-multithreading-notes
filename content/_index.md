@@ -1,3 +1,8 @@
+---
+title: "Home"
+layout: "list"
+---
+
 # Java Multithreading
 
 ### This contains notes of Java Multithreading which i have curated from a udemy course
