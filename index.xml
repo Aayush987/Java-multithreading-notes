@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Study Notes</title>
+    <title>Home on Study Notes</title>
     <link>https://aayush987.github.io/Java-multithreading-notes/</link>
-    <description>Recent content on Study Notes</description>
+    <description>Recent content in Home on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>

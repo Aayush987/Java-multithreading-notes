@@ -8,9 +8,6 @@
     <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://aayush987.github.io/Java-multithreading-notes/</loc>
-    <lastmod>2026-03-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferencescompareandsetexamples/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -45,6 +42,9 @@
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</loc>
+    <lastmod>2026-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/</loc>
