@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Concurrency Challenges &amp; Solutions on Java Multithreading Notes</title>
+    <link>http://localhost:1313/concurrency-challenges--solutions/</link>
+    <description>Recent content in Concurrency Challenges &amp; Solutions on Java Multithreading Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="http://localhost:1313/concurrency-challenges--solutions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title></title>
+      <link>http://localhost:1313/concurrency-challenges--solutions/atomicoperations_volatile_metrics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges--solutions/atomicoperations_volatile_metrics/</guid>
+      <description>&lt;h1 id=&#34;atomic-operations-volatile--metrics&#34;&gt;Atomic Operations, Volatile, &amp;amp; Metrics&lt;/h1&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Traditional locking (&lt;code&gt;synchronized&lt;/code&gt;) is &amp;ldquo;heavy.&amp;rdquo; It involves suspending threads, context switching, and OS overhead. &lt;strong&gt;Atomic Operations&lt;/strong&gt; allow us to perform &amp;ldquo;Read-Modify-Write&amp;rdquo; cycles as a single, uninterruptible unit at the hardware level. The &lt;code&gt;volatile&lt;/code&gt; keyword ensures that changes made by one thread are immediately visible to others, preventing &amp;ldquo;stale data&amp;rdquo; bugs caused by CPU caching.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-volatile-vs-atomic-vs-synchronized&#34;&gt;2. Comparison: Volatile vs. Atomic vs. Synchronized&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;volatile&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicInteger&lt;/code&gt; / &lt;code&gt;AtomicLong&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Visibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Atomicity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;No&lt;/strong&gt; (Doesn&amp;rsquo;t fix &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Locking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free (uses CAS).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (uses Locks).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Medium/Low.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-performance-metrics&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Performance Metrics&lt;/h3&gt;
+&lt;p&gt;Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

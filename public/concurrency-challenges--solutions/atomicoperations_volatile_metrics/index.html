@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Java Multithreading Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="Atomic Operations, Volatile, &amp; Metrics
+1. The &ldquo;Why&rdquo;
+Traditional locking (synchronized) is &ldquo;heavy.&rdquo; It involves suspending threads, context switching, and OS overhead. Atomic Operations allow us to perform &ldquo;Read-Modify-Write&rdquo; cycles as a single, uninterruptible unit at the hardware level. The volatile keyword ensures that changes made by one thread are immediately visible to others, preventing &ldquo;stale data&rdquo; bugs caused by CPU caching.
+2. Comparison: Volatile vs. Atomic vs. Synchronized
+
+  
+      
+          Feature
+          volatile
+          AtomicInteger / AtomicLong
+          synchronized
+      
+  
+  
+      
+          Visibility
+          Yes (Guarantees fresh data).
+          Yes (Guarantees fresh data).
+          Yes (Guarantees fresh data).
+      
+      
+          Atomicity
+          No (Doesn&rsquo;t fix count&#43;&#43;).
+          Yes (Fixes count&#43;&#43;).
+          Yes (Fixes count&#43;&#43;).
+      
+      
+          Locking
+          Lock-free.
+          Lock-free (uses CAS).
+          Blocking (uses Locks).
+      
+      
+          Performance
+          Extremely High.
+          High.
+          Medium/Low.
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: Performance Metrics
+Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/concurrency-challenges--solutions/atomicoperations_volatile_metrics/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/concurrency-challenges--solutions/atomicoperations_volatile_metrics/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Java Multithreading Notes (Alt + H)">Java Multithreading Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      
+    </h1>
+    <div class="post-meta">
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="atomic-operations-volatile--metrics">Atomic Operations, Volatile, &amp; Metrics<a hidden class="anchor" aria-hidden="true" href="#atomic-operations-volatile--metrics">#</a></h1>
+<h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Traditional locking (<code>synchronized</code>) is &ldquo;heavy.&rdquo; It involves suspending threads, context switching, and OS overhead. <strong>Atomic Operations</strong> allow us to perform &ldquo;Read-Modify-Write&rdquo; cycles as a single, uninterruptible unit at the hardware level. The <code>volatile</code> keyword ensures that changes made by one thread are immediately visible to others, preventing &ldquo;stale data&rdquo; bugs caused by CPU caching.</p>
+<h3 id="2-comparison-volatile-vs-atomic-vs-synchronized">2. Comparison: Volatile vs. Atomic vs. Synchronized<a hidden class="anchor" aria-hidden="true" href="#2-comparison-volatile-vs-atomic-vs-synchronized">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>volatile</code></th>
+          <th style="text-align: left"><code>AtomicInteger</code> / <code>AtomicLong</code></th>
+          <th style="text-align: left"><code>synchronized</code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Visibility</strong></td>
+          <td style="text-align: left">Yes (Guarantees fresh data).</td>
+          <td style="text-align: left">Yes (Guarantees fresh data).</td>
+          <td style="text-align: left">Yes (Guarantees fresh data).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Atomicity</strong></td>
+          <td style="text-align: left"><strong>No</strong> (Doesn&rsquo;t fix <code>count++</code>).</td>
+          <td style="text-align: left"><strong>Yes</strong> (Fixes <code>count++</code>).</td>
+          <td style="text-align: left"><strong>Yes</strong> (Fixes <code>count++</code>).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Locking</strong></td>
+          <td style="text-align: left">Lock-free.</td>
+          <td style="text-align: left">Lock-free (uses CAS).</td>
+          <td style="text-align: left">Blocking (uses Locks).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Performance</strong></td>
+          <td style="text-align: left">Extremely High.</td>
+          <td style="text-align: left">High.</td>
+          <td style="text-align: left">Medium/Low.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-performance-metrics">3. The &ldquo;Golden&rdquo; Snippet: Performance Metrics<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-performance-metrics">#</a></h3>
+<p>Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.atomic.AtomicLong;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BusinessMetrics</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 1. Volatile: Ensures threads always read the latest &#39;active&#39; status</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> isRunning <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2. AtomicLong: Safe increment without using &#39;synchronized&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> AtomicLong requestCount <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong(0);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processRequest</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (isRunning) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// This is ATOMIC. No lock is acquired.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// It uses a CPU instruction called Compare-And-Swap (CAS).</span>
+</span></span><span style="display:flex;"><span>            requestCount.<span style="color:#a6e22e">incrementAndGet</span>(); 
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getCount</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> requestCount.<span style="color:#a6e22e">get</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">stopService</span>() {
+</span></span><span style="display:flex;"><span>        isRunning <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>; <span style="color:#75715e">// Immediately visible to all threads</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong><code>volatile boolean isRunning</code></strong>: Without <code>volatile</code>, if Thread A sets this to <code>false</code>, Thread B might keep running for a long time because it&rsquo;s reading the value <code>true</code> from its own CPU local cache. <code>volatile</code> forces it to read from Main Memory.</li>
+<li><strong><code>AtomicLong requestCount</code></strong>: If we used a regular <code>long</code>, the operation <code>count++</code> would require a lock. <code>AtomicLong</code> uses the <strong>CAS (Compare-and-Swap)</strong> strategy: it reads the value, calculates the new one, and only updates it if the value in memory hasn&rsquo;t changed since it last looked.</li>
+<li><strong><code>incrementAndGet()</code></strong>: This is a single method call that replaces the entire <code>read -&gt; modify -&gt; write</code> cycle safely.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Thread-1 processed request. Total: 1
+</span></span><span style="display:flex;"><span>Thread-2 processed request. Total: 2
+</span></span><span style="display:flex;"><span>... (1 million requests later) ...
+</span></span><span style="display:flex;"><span>Final Count: 1000000 
+</span></span><span style="display:flex;"><span>(Guaranteed to be exact, unlike a regular long++)
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The <code>volatile</code> Trap:</strong> A very common interview question: &ldquo;Is <code>volatile int count; count++;</code> thread-safe?&rdquo; The answer is <strong>NO</strong>. <code>volatile</code> only ensures you see the latest value; it doesn&rsquo;t prevent two threads from seeing the same value and both trying to increment it.</li>
+<li><strong>CAS Spinning:</strong> Atomic classes use &ldquo;optimistic&rdquo; locking. If 100 threads try to update the same <code>AtomicLong</code> at the exact same time, some will fail and have to &ldquo;retry&rdquo; (spin). In cases of extreme contention, <code>LongAdder</code> is often faster than <code>AtomicLong</code>.</li>
+<li><strong>Compound Actions:</strong> Atomics only make <strong>one</strong> variable atomic. If you need to update two different variables together as one unit, you must go back to using <code>synchronized</code>.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Java Multithreading Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

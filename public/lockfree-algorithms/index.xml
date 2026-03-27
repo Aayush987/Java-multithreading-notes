@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>LockFree Algorithms &amp; Data Structures on Study Notes</title>
+    <link>http://localhost:1313/lockfree-algorithms/</link>
+    <description>Recent content in LockFree Algorithms &amp; Data Structures on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/lockfree-algorithms/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>1. AtomicReference -  Object Swapping</title>
+      <link>http://localhost:1313/lockfree-algorithms/atomicreferencescompareandsetexamples/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/lockfree-algorithms/atomicreferencescompareandsetexamples/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;The Concept:&lt;/strong&gt; While &lt;code&gt;AtomicInteger&lt;/code&gt; works for primitives, &lt;code&gt;AtomicReference&amp;lt;V&amp;gt;&lt;/code&gt; allows you to update a reference to an entire object as a single atomic unit. This is the foundation of &amp;ldquo;Immutable State&amp;rdquo; updates.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; java.util.concurrent.atomic.AtomicReference;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ConfigManager&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// A shared configuration object that many threads read&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; AtomicReference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Config&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; currentConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; AtomicReference&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;gt;&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Config(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;updateConfig&lt;/span&gt;(String newVersion) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Config oldConfig;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        Config newConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;new&lt;/span&gt; Config(newVersion);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;do&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            oldConfig &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; currentConfig.&lt;span style=&#34;color:#a6e22e&#34;&gt;get&lt;/span&gt;(); &lt;span style=&#34;color:#75715e&#34;&gt;// Snapshot of the pointer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#75715e&#34;&gt;// We don&amp;#39;t modify oldConfig; we create a whole new one!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        } &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;currentConfig.&lt;span style=&#34;color:#a6e22e&#34;&gt;compareAndSet&lt;/span&gt;(oldConfig, newConfig));
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        System.&lt;span style=&#34;color:#a6e22e&#34;&gt;out&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;println&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Config updated to: &amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; newVersion);
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Config&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;final&lt;/span&gt; String version;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    Config(String v) { &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;version&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; v; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Explanation:&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Atomic Integers &amp; Lock-Free E-commerce</title>
+      <link>http://localhost:1313/lockfree-algorithms/atomicinteger_lockfree/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/lockfree-algorithms/atomicinteger_lockfree/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In an e-commerce platform, the &amp;ldquo;Inventory Count&amp;rdquo; is the most contested variable.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem with Locks:&lt;/strong&gt; If 10,000 users try to buy an item, &lt;code&gt;synchronized&lt;/code&gt; puts 9,999 threads to sleep while 1 thread works. The overhead of waking them all up is higher than the actual work of subtracting 1 from the inventory.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Atomic Solution:&lt;/strong&gt; &lt;code&gt;AtomicInteger&lt;/code&gt; uses the CPU&amp;rsquo;s native ability to &amp;ldquo;reserve&amp;rdquo; a memory address for a nanosecond, update it, and release it without ever suspending a thread.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-vs-atomicinteger&#34;&gt;2. Comparison: Synchronized vs. AtomicInteger&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized int&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicInteger&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Mechanism&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (Pessimistic).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-Free (Optimistic CAS).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Thread State&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Threads become &lt;code&gt;BLOCKED&lt;/code&gt;.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Threads stay &lt;code&gt;RUNNABLE&lt;/code&gt; (Spinning).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High contention = slow.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High contention = fast (until CPU saturation).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Operations&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Manual &lt;code&gt;count++&lt;/code&gt; (3 steps).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Atomic &lt;code&gt;decrementAndGet()&lt;/code&gt; (1 step).&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-high-traffic-inventory&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: High-Traffic Inventory&lt;/h3&gt;
+&lt;p&gt;This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single &lt;code&gt;synchronized&lt;/code&gt; block.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Atomic References &amp; Lock-Free Data Structures</title>
+      <link>http://localhost:1313/lockfree-algorithms/atomicreferences__compareset/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/lockfree-algorithms/atomicreferences__compareset/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;If you want to update a complex object (like a &lt;code&gt;User&lt;/code&gt; profile or a &lt;code&gt;Node&lt;/code&gt; in a list) across multiple threads, you usually have to lock the entire object.
+&lt;strong&gt;AtomicReference&lt;/strong&gt; allows you to swap an entire object reference atomically. It says: &amp;ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-synchronized-object-vs-atomicreference&#34;&gt;2. Comparison: Synchronized Object vs. AtomicReference&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized (obj)&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicReference&amp;lt;T&amp;gt;&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Safety&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Prevents multiple threads from entering.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Prevents &amp;ldquo;stale&amp;rdquo; updates via CAS.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Blocking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Threads sleep).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;No (Threads &amp;ldquo;spin&amp;rdquo; and retry).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Granularity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Locks the whole block of code.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Only protects the &lt;em&gt;reference&lt;/em&gt; (the pointer).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High overhead for small updates.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely fast for &amp;ldquo;pointer swapping.&amp;rdquo;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-a-lock-free-stack&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: A Lock-Free Stack&lt;/h3&gt;
+&lt;p&gt;A standard &lt;code&gt;Stack&lt;/code&gt; uses &lt;code&gt;synchronized&lt;/code&gt; on &lt;code&gt;push&lt;/code&gt; and &lt;code&gt;pop&lt;/code&gt;. In this high-performance version, we use &lt;code&gt;AtomicReference&lt;/code&gt; to manage the &amp;ldquo;Head&amp;rdquo; of the stack without any locks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Introduction to Non-Blocking &amp; Lock-Free Operations</title>
+      <link>http://localhost:1313/lockfree-algorithms/intro_to_lockfree_nonblocking/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/lockfree-algorithms/intro_to_lockfree_nonblocking/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Traditional locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) have major downsides:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Deadlocks:&lt;/strong&gt; Threads waiting for each other forever.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Priority Inversion:&lt;/strong&gt; A low-priority thread holding a lock prevents a high-priority thread from running.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Performance Overhead:&lt;/strong&gt; Suspending and resuming a thread (context switching) is expensive for the OS.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Lock-Free&lt;/strong&gt; operations use hardware-level atomic instructions to ensure that at least one thread always makes progress, even if others are interrupted or fail.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-blocking-vs-lock-free-non-blocking&#34;&gt;2. Comparison: Blocking vs. Lock-Free (Non-Blocking)&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Blocking (Locks)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Lock-Free (Non-Blocking)&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Philosophy&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&amp;ldquo;Pessimistic&amp;rdquo; - Assume trouble and lock the door.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&amp;ldquo;Optimistic&amp;rdquo; - Assume success and retry if failed.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Hardware Tool&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Mutex / Monitors.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;CAS (Compare-And-Swap)&lt;/strong&gt; instructions.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Deadlock Risk&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Zero.&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Throughput&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Limited by lock contention.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Scales better with more CPU cores).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Complexity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Simple to write and reason about.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely difficult to design correctly.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-atomic-compare-and-swap-cas&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Atomic Compare-And-Swap (CAS)&lt;/h3&gt;
+&lt;p&gt;The heart of every lock-free algorithm is the &lt;strong&gt;CAS&lt;/strong&gt; operation. It is a single CPU instruction that says: &lt;em&gt;&amp;ldquo;If the value in memory is X, change it to Y. If it&amp;rsquo;s not X anymore, don&amp;rsquo;t do anything and tell me I failed.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

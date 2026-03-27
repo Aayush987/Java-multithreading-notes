@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Introduction to Blocking IO | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+Blocking IO is the &ldquo;classic&rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.
+
+The Problem: If you have 1,000 users and each requires a blocking thread, you need 1,000 threads. Threads are expensive—they consume memory (Stack) and cause &ldquo;Context Switching&rdquo; overhead.
+
+2. Comparison: Blocking IO vs. Non-Blocking IO (NIO)
+
+  
+      
+          Feature
+          Blocking IO (BIO)
+          Non-Blocking IO (NIO)
+      
+  
+  
+      
+          Thread Behavior
+          Thread &ldquo;stops&rdquo; and waits for data.
+          Thread &ldquo;asks&rdquo; and moves on if data isn&rsquo;t ready.
+      
+      
+          Efficiency
+          High for single, long-lived connections.
+          High for thousands of concurrent connections.
+      
+      
+          Complexity
+          Simple (Sequential code).
+          High (Requires Event Loops/Callbacks).
+      
+      
+          Scalability
+          Limited by Thread Count / Memory.
+          Limited by CPU / Network Bandwidth.
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: The Standard Blocking Server
+This is a classic &ldquo;One Thread Per Connection&rdquo; model. It works fine for a few users, but it scales poorly.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/threading-models-for-high-performance-io/introduction_to_blockingio/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/threading-models-for-high-performance-io/introduction_to_blockingio/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Introduction to Blocking IO
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p><strong>Blocking IO</strong> is the &ldquo;classic&rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.</p>
+<ul>
+<li><strong>The Problem:</strong> If you have 1,000 users and each requires a blocking thread, you need 1,000 threads. Threads are expensive—they consume memory (Stack) and cause &ldquo;Context Switching&rdquo; overhead.</li>
+</ul>
+<h3 id="2-comparison-blocking-io-vs-non-blocking-io-nio">2. Comparison: Blocking IO vs. Non-Blocking IO (NIO)<a hidden class="anchor" aria-hidden="true" href="#2-comparison-blocking-io-vs-non-blocking-io-nio">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left">Blocking IO (BIO)</th>
+          <th style="text-align: left">Non-Blocking IO (NIO)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Thread Behavior</strong></td>
+          <td style="text-align: left">Thread &ldquo;stops&rdquo; and waits for data.</td>
+          <td style="text-align: left">Thread &ldquo;asks&rdquo; and moves on if data isn&rsquo;t ready.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Efficiency</strong></td>
+          <td style="text-align: left">High for single, long-lived connections.</td>
+          <td style="text-align: left">High for thousands of concurrent connections.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Complexity</strong></td>
+          <td style="text-align: left">Simple (Sequential code).</td>
+          <td style="text-align: left">High (Requires Event Loops/Callbacks).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Scalability</strong></td>
+          <td style="text-align: left">Limited by Thread Count / Memory.</td>
+          <td style="text-align: left">Limited by CPU / Network Bandwidth.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-the-standard-blocking-server">3. The &ldquo;Golden&rdquo; Snippet: The Standard Blocking Server<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-the-standard-blocking-server">#</a></h3>
+<p>This is a classic &ldquo;One Thread Per Connection&rdquo; model. It works fine for a few users, but it scales poorly.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.ServerSocket;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.Socket;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BlockingServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">startServer</span>() <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        ServerSocket serverSocket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket(8080);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server listening on port 8080...&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 1. BLOCKING CALL: The main thread stops here until a client connects</span>
+</span></span><span style="display:flex;"><span>            Socket clientSocket <span style="color:#f92672">=</span> serverSocket.<span style="color:#a6e22e">accept</span>(); 
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 2. We must spawn a new thread, or the server can&#39;t accept User B</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> handleRequest(clientSocket)).<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleRequest</span>(Socket socket) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (BufferedReader in <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader(<span style="color:#66d9ef">new</span> InputStreamReader(socket.<span style="color:#a6e22e">getInputStream</span>()))) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 3. BLOCKING CALL: The thread stops here until the client sends text</span>
+</span></span><span style="display:flex;"><span>            String request <span style="color:#f92672">=</span> in.<span style="color:#a6e22e">readLine</span>(); 
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Received: &#34;</span> <span style="color:#f92672">+</span> request);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong><code>accept()</code></strong>: This is the first roadblock. The thread literally does nothing until a user connects.</li>
+<li><strong><code>new Thread()</code></strong>: Because <code>handleRequest</code> also blocks, we <em>must</em> create a new thread for every single user. If 5,000 users connect, we create 5,000 threads.</li>
+<li><strong><code>readLine()</code></strong>: If a user connects but doesn&rsquo;t send data for 10 seconds, that thread sits idle, holding onto ~1MB of Stack memory and doing nothing.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Server listening on port 8080...
+</span></span><span style="display:flex;"><span>[Thread-1] Client connected. Waiting for data...
+</span></span><span style="display:flex;"><span>[Thread-2] Client connected. Waiting for data...
+</span></span><span style="display:flex;"><span>[Thread-1] Received: Hello Server!
+</span></span><span style="display:flex;"><span>[Thread-1] Finished. Thread terminated.
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The C10K Problem:</strong> Can one server handle 10,000 concurrent connections? With Blocking IO, you&rsquo;d need 10,000 threads. Most OS kernels will struggle with the &ldquo;Context Switching&rdquo; (swapping between 10,000 threads) more than the actual data processing.</li>
+<li><strong>Resource Exhaustion:</strong> Each thread in Java typically takes <strong>512KB to 1MB</strong> of RAM for its Stack. 1,000 idle threads = 1GB of RAM wasted just &ldquo;waiting.&rdquo;</li>
+<li><strong>Simplicity vs. Scale:</strong> Blocking IO is much easier to debug because the code is linear. You read line 1, then line 2. In Non-Blocking IO, line 2 might execute before line 1 is &ldquo;ready.&rdquo;</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

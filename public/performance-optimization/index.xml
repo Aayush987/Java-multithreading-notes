@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Performance Optimization on Study Notes</title>
+    <link>http://localhost:1313/performance-optimization/</link>
+    <description>Recent content in Performance Optimization on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/performance-optimization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Introduction to Performance &amp; Optimization for Latency in Threads</title>
+      <link>http://localhost:1313/performance-optimization/performance_optimization_introduction/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/performance-optimization/performance_optimization_introduction/</guid>
+      <description>&lt;h1 id=&#34;introduction-to-performance--optimization-for-latency&#34;&gt;Introduction to Performance &amp;amp; Optimization for Latency&lt;/h1&gt;
+&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a single-threaded environment, tasks are executed sequentially, meaning the total time is the sum of all tasks. We use multithreading for &lt;strong&gt;Latency Optimization&lt;/strong&gt; to break a single intensive task into smaller sub-tasks that run in parallel, reducing the wall-clock time the user has to wait for a result.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic&#34;&gt;2. Visual Logic&lt;/h3&gt;
+&lt;p&gt;The goal is to move from a &amp;ldquo;Serial&amp;rdquo; execution to a &amp;ldquo;Parallel&amp;rdquo; execution. If a task can be decomposed, we distribute the workload across multiple CPU cores.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/performance-optimization/optimization_forlatency_imageoptimization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/performance-optimization/optimization_forlatency_imageoptimization/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

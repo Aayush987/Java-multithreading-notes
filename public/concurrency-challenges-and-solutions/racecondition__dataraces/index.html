@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Race Conditions vs. Data Races | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+A Race Condition is a flaw in the timing or ordering of events that leads to incorrect program behavior. A Data Race is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.
+You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid both.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/concurrency-challenges-and-solutions/racecondition__dataraces/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/concurrency-challenges-and-solutions/racecondition__dataraces/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Race Conditions vs. Data Races
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>A <strong>Race Condition</strong> is a flaw in the <em>timing</em> or <em>ordering</em> of events that leads to incorrect program behavior. A <strong>Data Race</strong> is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.</p>
+<p>You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid <strong>both</strong>.</p>
+<h3 id="2-comparison-race-condition-vs-data-race">2. Comparison: Race Condition vs. Data Race<a hidden class="anchor" aria-hidden="true" href="#2-comparison-race-condition-vs-data-race">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left">Race Condition</th>
+          <th style="text-align: left">Data Race</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Definition</strong></td>
+          <td style="text-align: left">A logical flaw where the output depends on the sequence of thread execution.</td>
+          <td style="text-align: left">A memory-level flaw where two threads access a variable simultaneously.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Focus</strong></td>
+          <td style="text-align: left">High-level application logic (Semantics).</td>
+          <td style="text-align: left">Low-level memory access (Hardware/Compiler).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Solution</strong></td>
+          <td style="text-align: left">Proper synchronization or atomic operations.</td>
+          <td style="text-align: left">Use <code>synchronized</code> or <code>volatile</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Symptom</strong></td>
+          <td style="text-align: left">Incorrect results (e.g., balance is -$50).</td>
+          <td style="text-align: left">Stale data, unpredictable crashes, or &ldquo;impossible&rdquo; states.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippets">3. The &ldquo;Golden&rdquo; Snippets<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippets">#</a></h3>
+<h4 id="example-a-the-data-race-visibility-problem">Example A: The Data Race (Visibility Problem)<a hidden class="anchor" aria-hidden="true" href="#example-a-the-data-race-visibility-problem">#</a></h4>
+<p>In this example, <code>sharedResource.increment()</code> and <code>sharedResource.checkForDataRace()</code> run in different threads. Without <code>volatile</code> or <code>synchronized</code>, the CPU might &ldquo;reorder&rdquo; the instructions or cache the value of <code>x</code>, leading to an impossible result.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataRaceDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">method1</span>() { <span style="color:#75715e">// Thread 1</span>
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> 1;
+</span></span><span style="display:flex;"><span>        y <span style="color:#f92672">=</span> 1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">method2</span>() { <span style="color:#75715e">// Thread 2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (y <span style="color:#f92672">==</span> 1 <span style="color:#f92672">&amp;&amp;</span> x <span style="color:#f92672">==</span> 0) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// This SHOULD be impossible, but a Data Race </span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// allows the CPU to reorder y=1 before x=1!</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Data Race Detected: y is 1 but x is still 0!&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="example-b-the-race-condition-logic-problem">Example B: The Race Condition (Logic Problem)<a hidden class="anchor" aria-hidden="true" href="#example-b-the-race-condition-logic-problem">#</a></h4>
+<p>This is the &ldquo;Check-then-Act&rdquo; pattern. Even if the variable <code>count</code> is <code>volatile</code>, the <em>timing</em> between the check and the update is the problem.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RaceCondition</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">incrementIfZero</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (count <span style="color:#f92672">==</span> 0) { <span style="color:#75715e">// Check</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// A context switch happens here...</span>
+</span></span><span style="display:flex;"><span>            count<span style="color:#f92672">++</span>;      <span style="color:#75715e">// Act</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong>Instruction Reordering:</strong> In the <strong>Data Race</strong> example, the Java compiler or the CPU might decide that since <code>x</code> and <code>y</code> are independent, it&rsquo;s faster to execute <code>y = 1</code> before <code>x = 1</code>. Another thread might see <code>y=1</code> and <code>x=0</code>, which breaks the logic of your program.</li>
+<li><strong>The Fix for Data Race:</strong> Adding <code>volatile</code> to <code>x</code> and <code>y</code> creates a &ldquo;happens-before&rdquo; guarantee, preventing the compiler from reordering these specific instructions.</li>
+<li><strong>The Fix for Race Condition:</strong> <code>volatile</code> won&rsquo;t help the <code>incrementIfZero</code> method. You need <code>synchronized</code> to ensure that the &ldquo;Check&rdquo; and the &ldquo;Act&rdquo; happen as one atomic unit.</li>
+</ol>
+<h4 id="example-output-data-race">Example Output (Data Race):<a hidden class="anchor" aria-hidden="true" href="#example-output-data-race">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>(Run 1): y=1, x=1 (Correct)
+</span></span><span style="display:flex;"><span>(Run 2): y=0, x=0 (Correct)
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>(Run 1,000,000): Data Race Detected: y is 1 but x is still 0! 
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The &ldquo;Happens-Before&rdquo; Relationship:</strong> This is a formal rule in Java. If Action A &ldquo;happens-before&rdquo; Action B, then the results of A are guaranteed to be visible to B. Synchronization and <code>volatile</code> establish this relationship.</li>
+<li><strong>Benign Data Races:</strong> Some developers claim certain data races are &ldquo;safe&rdquo; (like a simple flag), but in Java, a data race can lead to &ldquo;Out-of-Thin-Air&rdquo; values or objects being partially constructed. <strong>Never allow a Data Race.</strong></li>
+<li><strong>The Compiler is Smarter Than You:</strong> The compiler assumes your code is single-threaded when it optimizes. It will move code around to save CPU cycles unless you explicitly tell it not to using synchronization keywords.</li>
+</ul>
+<hr>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

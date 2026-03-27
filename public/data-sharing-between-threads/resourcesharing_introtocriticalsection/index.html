@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Resource Sharing &amp; Critical Sections (Deep Dive) | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+In multithreading, a Critical Section is any segment of code that accesses a shared resource (like a variable, a file, or a database connection) where at least one thread is performing a write operation.
+The problem is that most high-level operations (like count&#43;&#43;) are not atomic. To the CPU, count&#43;&#43; is actually three distinct steps:
+
+Load: Move the value from the Main Memory (Heap) into a CPU Register.
+Increment: Add 1 to the value inside the Register.
+Store: Move the new value from the Register back to Main Memory.
+
+If Thread A is &ldquo;paused&rdquo; (context-switched) after Step 2, and Thread B performs all three steps, Thread A will eventually wake up and overwrite Thread B&rsquo;s work with an outdated value. This is a Race Condition.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/data-sharing-between-threads/resourcesharing_introtocriticalsection/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/data-sharing-between-threads/resourcesharing_introtocriticalsection/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Resource Sharing &amp; Critical Sections (Deep Dive)
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>In multithreading, a <strong>Critical Section</strong> is any segment of code that accesses a shared resource (like a variable, a file, or a database connection) where at least one thread is performing a <strong>write</strong> operation.</p>
+<p>The problem is that most high-level operations (like <code>count++</code>) are not <strong>atomic</strong>. To the CPU, <code>count++</code> is actually three distinct steps:</p>
+<ol>
+<li><strong>Load:</strong> Move the value from the Main Memory (Heap) into a CPU Register.</li>
+<li><strong>Increment:</strong> Add 1 to the value inside the Register.</li>
+<li><strong>Store:</strong> Move the new value from the Register back to Main Memory.</li>
+</ol>
+<p>If Thread A is &ldquo;paused&rdquo; (context-switched) after Step 2, and Thread B performs all three steps, Thread A will eventually wake up and overwrite Thread B&rsquo;s work with an outdated value. This is a <strong>Race Condition</strong>.</p>
+<h3 id="2-visual-logic-the-lost-update-problem">2. Visual Logic: The &ldquo;Lost Update&rdquo; Problem<a hidden class="anchor" aria-hidden="true" href="#2-visual-logic-the-lost-update-problem">#</a></h3>
+<p>Imagine a shared variable <code>counter = 5</code>.</p>
+<ul>
+<li><strong>Thread 1</strong> reads <code>5</code>, increments it to <code>6</code> in its private register, but then the OS pauses it.</li>
+<li><strong>Thread 2</strong> reads <code>5</code>, increments it to <code>6</code>, and saves <code>6</code> to memory.</li>
+<li><strong>Thread 1</strong> wakes up, still holding the value <code>6</code> in its register, and saves <code>6</code> to memory.</li>
+<li><strong>The Result:</strong> Even though two increments happened, the value is <code>6</code> instead of <code>7</code>. One update was &ldquo;lost.&rdquo;</li>
+</ul>
+<h3 id="3-the-golden-snippets">3. The &ldquo;Golden&rdquo; Snippets<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippets">#</a></h3>
+<h4 id="example-a-the-broken-counter-race-condition">Example A: The Broken Counter (Race Condition)<a hidden class="anchor" aria-hidden="true" href="#example-a-the-broken-counter-race-condition">#</a></h4>
+<p>This code looks correct but will produce a different total every time you run it because the <code>inventory</code> variable is shared on the Heap without protection.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SharedResourceDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> InterruptedException {
+</span></span><span style="display:flex;"><span>        Inventory inventory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Inventory();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Thread to add items</span>
+</span></span><span style="display:flex;"><span>        Thread incrementThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) inventory.<span style="color:#a6e22e">increment</span>();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Thread to remove items</span>
+</span></span><span style="display:flex;"><span>        Thread decrementThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) inventory.<span style="color:#a6e22e">decrement</span>();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        incrementThread.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        decrementThread.<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        incrementThread.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        decrementThread.<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Expected: 0, Actual: Random value (e.g., -14, 22, 5)</span>
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Final items: &#34;</span> <span style="color:#f92672">+</span> inventory.<span style="color:#a6e22e">getItems</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Inventory</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> items <span style="color:#f92672">=</span> 0; <span style="color:#75715e">// Shared on the Heap</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() { items<span style="color:#f92672">++</span>; } <span style="color:#75715e">// CRITICAL SECTION</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">decrement</span>() { items<span style="color:#f92672">--</span>; } <span style="color:#75715e">// CRITICAL SECTION</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getItems</span>() { <span style="color:#66d9ef">return</span> items; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="example-b-the-check-then-act-race-condition">Example B: The &ldquo;Check-Then-Act&rdquo; Race Condition<a hidden class="anchor" aria-hidden="true" href="#example-b-the-check-then-act-race-condition">#</a></h4>
+<p>Race conditions aren&rsquo;t just about math; they are about <strong>timing</strong>. Even if you use thread-safe components, the <em>logic</em> between two calls can be a critical section.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">withdraw</span>(<span style="color:#66d9ef">int</span> amount) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Critical Section starts here</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (balance <span style="color:#f92672">&gt;=</span> amount) {           <span style="color:#75715e">// 1. Check</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Context switch could happen here!</span>
+</span></span><span style="display:flex;"><span>        balance <span style="color:#f92672">=</span> balance <span style="color:#f92672">-</span> amount;    <span style="color:#75715e">// 2. Act</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>If two threads check the balance at the same time, they might both see <code>$100</code>, both pass the check, and both withdraw <code>$100</code>, leaving the account at <code>-$100</code>.</p>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>Non-Atomic Longs/Doubles:</strong> In Java, 64-bit types like <code>long</code> and <code>double</code> are not even guaranteed to have atomic &ldquo;writes&rdquo; on 32-bit JVMs. A thread could theoretically write the first 32 bits, get interrupted, and leave the variable in a &ldquo;half-written&rdquo; corrupted state.</li>
+<li><strong>The Visibility Problem:</strong> Sometimes a thread updates a variable on the Heap, but another thread keeps reading a &ldquo;cached&rdquo; version from its CPU Core&rsquo;s local cache. This is why we need <code>volatile</code> or <code>synchronized</code>.</li>
+<li><strong>Identifying Critical Sections:</strong> A common interview task is to point out the critical section. Rule of thumb: If you see a shared variable and an assignment operator (<code>=</code>, <code>++</code>, <code>+=</code>), you are looking at a critical section.</li>
+</ul>
+<hr>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

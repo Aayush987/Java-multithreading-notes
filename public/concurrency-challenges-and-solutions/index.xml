@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Concurrency Challenges &amp; Solutions on Study Notes</title>
+    <link>http://localhost:1313/concurrency-challenges-and-solutions/</link>
+    <description>Recent content in Concurrency Challenges &amp; Solutions on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/concurrency-challenges-and-solutions/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Atomic Operations, Volatile, &amp; Metrics</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;Traditional locking (&lt;code&gt;synchronized&lt;/code&gt;) is &amp;ldquo;heavy.&amp;rdquo; It involves suspending threads, context switching, and OS overhead. &lt;strong&gt;Atomic Operations&lt;/strong&gt; allow us to perform &amp;ldquo;Read-Modify-Write&amp;rdquo; cycles as a single, uninterruptible unit at the hardware level. The &lt;code&gt;volatile&lt;/code&gt; keyword ensures that changes made by one thread are immediately visible to others, preventing &amp;ldquo;stale data&amp;rdquo; bugs caused by CPU caching.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-volatile-vs-atomic-vs-synchronized&#34;&gt;2. Comparison: Volatile vs. Atomic vs. Synchronized&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;volatile&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;AtomicInteger&lt;/code&gt; / &lt;code&gt;AtomicLong&lt;/code&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized&lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Visibility&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Yes (Guarantees fresh data).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Atomicity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;No&lt;/strong&gt; (Doesn&amp;rsquo;t fix &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Yes&lt;/strong&gt; (Fixes &lt;code&gt;count++&lt;/code&gt;).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Locking&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Lock-free (uses CAS).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Blocking (uses Locks).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Extremely High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High.&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Medium/Low.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-performance-metrics&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: Performance Metrics&lt;/h3&gt;
+&lt;p&gt;Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Critical Section &amp; Synchronization</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;We need a way to make a sequence of operations &lt;strong&gt;Atomic&lt;/strong&gt; (all-or-nothing). Since the CPU can interrupt a thread at any micro-instruction, we use &lt;strong&gt;Mutual Exclusion (Mutex)&lt;/strong&gt;. This ensures that if Thread A is halfway through an update, Thread B is physically blocked from starting that same update until Thread A finishes.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic-the-monitorlock-concept&#34;&gt;2. Visual Logic: The Monitor/Lock Concept&lt;/h3&gt;
+&lt;p&gt;In Java, every &lt;strong&gt;Object&lt;/strong&gt; has a built-in &amp;ldquo;Monitor&amp;rdquo; (or Intrinsic Lock). Think of it like a bathroom with a single key:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Deep Dive- Synchronization in Action</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;We use synchronization to prevent &lt;strong&gt;Data Corruption&lt;/strong&gt;. Without it, two threads can &amp;ldquo;read&amp;rdquo; the same initial value, perform an operation, and &amp;ldquo;write&amp;rdquo; back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).&lt;/p&gt;
+&lt;h3 id=&#34;2-detailed-code-explanation&#34;&gt;2. Detailed Code Explanation&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s look at a common pattern: &lt;strong&gt;The Thread-Safe Counter.&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Counter&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;private&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; count &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; 0;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// The &amp;#39;synchronized&amp;#39; keyword tells Java: &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;// &amp;#34;Only one thread can enter this method at a time using this specific object&amp;#39;s lock.&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;synchronized&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;increment&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 1: Read &amp;#39;count&amp;#39; from Memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 2: Add 1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;// Step 3: Write &amp;#39;count&amp;#39; back to Memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;public&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;synchronized&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;getCount&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;.&lt;span style=&#34;color:#a6e22e&#34;&gt;count&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;how-the-jvm-executes-this&#34;&gt;How the JVM executes this:&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;The Lock Acquisition:&lt;/strong&gt; When Thread A calls &lt;code&gt;increment()&lt;/code&gt;, it looks at the &lt;code&gt;Counter&lt;/code&gt; object. Every object in Java has a &lt;strong&gt;Monitor&lt;/strong&gt;. Thread A &amp;ldquo;grabs&amp;rdquo; the monitor.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Exclusion:&lt;/strong&gt; While Thread A is inside &lt;code&gt;increment()&lt;/code&gt;, Thread B tries to call &lt;code&gt;increment()&lt;/code&gt;. The JVM sees that Thread A holds the monitor. Thread B is put into a &lt;strong&gt;BLOCKED&lt;/strong&gt; state (it stops executing and waits).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Memory Barrier:&lt;/strong&gt; When Thread A finishes, it &amp;ldquo;releases&amp;rdquo; the monitor. Crucially, it also flushes its changes to the &lt;strong&gt;Main Memory (Heap)&lt;/strong&gt; so other threads can see the updated value.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Hand-off:&lt;/strong&gt; The JVM wakes up Thread B. Thread B now acquires the monitor and sees the updated value left by Thread A.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;3-finer-grained-synchronization-the-block&#34;&gt;3. Finer-Grained Synchronization (The Block)&lt;/h3&gt;
+&lt;p&gt;Sometimes, synchronizing an entire method is overkill. If your method is 100 lines long, but only 1 line touches the shared variable, you should use a &lt;strong&gt;Synchronized Block&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Locking Strategies &amp; Deadlocks</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;As applications grow, a single lock (like &lt;code&gt;synchronized(this)&lt;/code&gt;) becomes a bottleneck. To improve performance, we use &lt;strong&gt;Fine-Grained Locking&lt;/strong&gt; (multiple locks for different resources). However, the moment you have more than one lock, the &lt;strong&gt;Order of Acquisition&lt;/strong&gt; matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.&lt;/p&gt;
+&lt;h3 id=&#34;2-comparison-coarse-grained-vs-fine-grained-locking&#34;&gt;2. Comparison: Coarse-Grained vs. Fine-Grained Locking&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Feature&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Coarse-Grained&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Fine-Grained&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Simplicity&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (One lock for everything).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Many locks to manage).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Performance&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Low (Threads queue up unnecessarily).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Threads only block if using the same resource).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Risk of Deadlock&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Zero (You can&amp;rsquo;t deadlock with one lock).&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;High (Requires strict discipline).&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;synchronized(database)&lt;/code&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;code&gt;lockTableA&lt;/code&gt;, &lt;code&gt;lockTableB&lt;/code&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-the-golden-snippet-the-deadlock-trap&#34;&gt;3. The &amp;ldquo;Golden&amp;rdquo; Snippet: The Deadlock Trap&lt;/h3&gt;
+&lt;p&gt;In this example, two threads are trying to transfer money between two accounts. Each account has its own lock.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Race Conditions vs. Data Races</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;A &lt;strong&gt;Race Condition&lt;/strong&gt; is a flaw in the &lt;em&gt;timing&lt;/em&gt; or &lt;em&gt;ordering&lt;/em&gt; of events that leads to incorrect program behavior. A &lt;strong&gt;Data Race&lt;/strong&gt; is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.&lt;/p&gt;
+&lt;p&gt;You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid &lt;strong&gt;both&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The 4 Conditions for Deadlock (Coffman’s Conditions)</title>
+      <link>http://localhost:1313/concurrency-challenges-and-solutions/deadlockcondition/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/concurrency-challenges-and-solutions/deadlockcondition/</guid>
+      <description>&lt;h3 id=&#34;1-mutual-exclusion&#34;&gt;1. Mutual Exclusion&lt;/h3&gt;
+&lt;p&gt;Only one thread can have exclusive access to a resource at any given time. If a second thread tries to access that resource, it must wait until the first thread releases it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The Problem:&lt;/strong&gt; If resources were sharable (like a Read-Only file), there would be no waiting and no deadlock.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-hold-and-wait&#34;&gt;2. Hold and Wait&lt;/h3&gt;
+&lt;p&gt;A thread is already holding at least one resource and is waiting to acquire additional resources that are currently being held by other threads.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

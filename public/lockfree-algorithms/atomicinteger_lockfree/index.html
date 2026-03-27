@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Atomic Integers &amp; Lock-Free E-commerce | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="1. The &ldquo;Why&rdquo;
+In an e-commerce platform, the &ldquo;Inventory Count&rdquo; is the most contested variable.
+
+The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,999 threads to sleep while 1 thread works. The overhead of waking them all up is higher than the actual work of subtracting 1 from the inventory.
+The Atomic Solution: AtomicInteger uses the CPU&rsquo;s native ability to &ldquo;reserve&rdquo; a memory address for a nanosecond, update it, and release it without ever suspending a thread.
+
+2. Comparison: Synchronized vs. AtomicInteger
+
+  
+      
+          Feature
+          synchronized int
+          AtomicInteger
+      
+  
+  
+      
+          Mechanism
+          Blocking (Pessimistic).
+          Lock-Free (Optimistic CAS).
+      
+      
+          Thread State
+          Threads become BLOCKED.
+          Threads stay RUNNABLE (Spinning).
+      
+      
+          Performance
+          High contention = slow.
+          High contention = fast (until CPU saturation).
+      
+      
+          Operations
+          Manual count&#43;&#43; (3 steps).
+          Atomic decrementAndGet() (1 step).
+      
+  
+
+
+3. The &ldquo;Golden&rdquo; Snippet: High-Traffic Inventory
+This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single synchronized block.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/lockfree-algorithms/atomicinteger_lockfree/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/lockfree-algorithms/atomicinteger_lockfree/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Atomic Integers &amp; Lock-Free E-commerce
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>In an e-commerce platform, the &ldquo;Inventory Count&rdquo; is the most contested variable.</p>
+<ul>
+<li><strong>The Problem with Locks:</strong> If 10,000 users try to buy an item, <code>synchronized</code> puts 9,999 threads to sleep while 1 thread works. The overhead of waking them all up is higher than the actual work of subtracting 1 from the inventory.</li>
+<li><strong>The Atomic Solution:</strong> <code>AtomicInteger</code> uses the CPU&rsquo;s native ability to &ldquo;reserve&rdquo; a memory address for a nanosecond, update it, and release it without ever suspending a thread.</li>
+</ul>
+<h3 id="2-comparison-synchronized-vs-atomicinteger">2. Comparison: Synchronized vs. AtomicInteger<a hidden class="anchor" aria-hidden="true" href="#2-comparison-synchronized-vs-atomicinteger">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left"><code>synchronized int</code></th>
+          <th style="text-align: left"><code>AtomicInteger</code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Mechanism</strong></td>
+          <td style="text-align: left">Blocking (Pessimistic).</td>
+          <td style="text-align: left">Lock-Free (Optimistic CAS).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Thread State</strong></td>
+          <td style="text-align: left">Threads become <code>BLOCKED</code>.</td>
+          <td style="text-align: left">Threads stay <code>RUNNABLE</code> (Spinning).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Performance</strong></td>
+          <td style="text-align: left">High contention = slow.</td>
+          <td style="text-align: left">High contention = fast (until CPU saturation).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Operations</strong></td>
+          <td style="text-align: left">Manual <code>count++</code> (3 steps).</td>
+          <td style="text-align: left">Atomic <code>decrementAndGet()</code> (1 step).</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="3-the-golden-snippet-high-traffic-inventory">3. The &ldquo;Golden&rdquo; Snippet: High-Traffic Inventory<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-high-traffic-inventory">#</a></h3>
+<p>This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single <code>synchronized</code> block.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.atomic.AtomicInteger;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InventorySystem</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Atomic variable initialized with 100 items in stock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicInteger stock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger(100);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">purchaseItem</span>(<span style="color:#66d9ef">int</span> quantity) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> currentStock <span style="color:#f92672">=</span> stock.<span style="color:#a6e22e">get</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (currentStock <span style="color:#f92672">&lt;</span> quantity) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; - Out of stock!&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>; 
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> updatedStock <span style="color:#f92672">=</span> currentStock <span style="color:#f92672">-</span> quantity;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// CAS: Only update if stock hasn&#39;t changed since we last checked</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (stock.<span style="color:#a6e22e">compareAndSet</span>(currentStock, updatedStock)) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">getName</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; purchased! Remaining: &#34;</span> <span style="color:#f92672">+</span> updatedStock);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// If compareAndSet fails, the loop &#34;retries&#34; immediately with the new value</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ol>
+<li><strong><code>stock.get()</code></strong>: Gets the current &ldquo;snapshot&rdquo; of the inventory.</li>
+<li><strong>The &ldquo;Check&rdquo;</strong>: We verify if there is enough stock. Note that this check happens <em>before</em> the update.</li>
+<li><strong><code>compareAndSet(expect, update)</code></strong>: This is the magic. It tells the hardware: &ldquo;Check if the stock is still <code>currentStock</code>. If yes, set it to <code>updatedStock</code>. If someone else bought an item in the last microsecond, fail and return <code>false</code>.&rdquo;</li>
+<li><strong>The Infinite Loop</strong>: If <code>compareAndSet</code> fails, we don&rsquo;t give up. The <code>while(true)</code> loop immediately fetches the <em>new</em> stock count and tries again.</li>
+</ol>
+<h4 id="example-output">Example Output:<a hidden class="anchor" aria-hidden="true" href="#example-output">#</a></h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Thread-1 purchased! Remaining: 99
+</span></span><span style="display:flex;"><span>Thread-2 purchased! Remaining: 98
+</span></span><span style="display:flex;"><span>Thread-3 - Attempting CAS... Failed (Thread-4 beat it!)
+</span></span><span style="display:flex;"><span>Thread-3 - Retrying... purchased! Remaining: 97
+</span></span></code></pre></div><hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The &ldquo;Spin&rdquo; Cost:</strong> If 50,000 threads all try to update the same <code>AtomicInteger</code>, they will spend a lot of CPU power &ldquo;looping&rdquo; and failing. In extreme cases, <code>LongAdder</code> (which spreads the sum across different cells) is a better choice for pure counters.</li>
+<li><strong>Complex Logic:</strong> Atomics are great for a <em>single</em> value. If you need to update &ldquo;Inventory&rdquo; AND &ldquo;User Balance&rdquo; together as one atomic unit, an <code>AtomicInteger</code> isn&rsquo;t enough—you’ll need a Lock or a more advanced lock-free structure.</li>
+<li><strong>Memory Visibility:</strong> Like <code>volatile</code>, <code>AtomicInteger</code> ensures that when one thread updates the value, all other CPU cores see that change immediately.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

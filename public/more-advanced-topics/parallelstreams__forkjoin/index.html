@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Parallel Streams &amp; ForkJoinPool | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="This section transitions from IO-bound concurrency (waiting for databases or networks) back to CPU-bound efficiency. If you have a massive dataset—like 10 million rows of sales data—and you need to calculate the total tax, you don&rsquo;t want to use one CPU core while the other 15 sit idle.
+1. The &ldquo;Why&rdquo;
+Modern CPUs are &ldquo;Multi-core.&rdquo; A standard for loop or a sequential Stream in Java only uses one thread. To use all your hardware&rsquo;s power, you need to split the data into chunks, process them simultaneously, and then merge the results.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/more-advanced-topics/parallelstreams__forkjoin/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/more-advanced-topics/parallelstreams__forkjoin/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Parallel Streams &amp; ForkJoinPool
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>This section transitions from <strong>IO-bound</strong> concurrency (waiting for databases or networks) back to <strong>CPU-bound</strong> efficiency. If you have a massive dataset—like 10 million rows of sales data—and you need to calculate the total tax, you don&rsquo;t want to use one CPU core while the other 15 sit idle.</p>
+<h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Modern CPUs are &ldquo;Multi-core.&rdquo; A standard <code>for</code> loop or a sequential <code>Stream</code> in Java only uses <strong>one</strong> thread. To use all your hardware&rsquo;s power, you need to split the data into chunks, process them simultaneously, and then merge the results.</p>
+<ul>
+<li><strong>Parallel Streams:</strong> The high-level, easy way to do this.</li>
+<li><strong>ForkJoinPool:</strong> The low-level &ldquo;engine&rdquo; that makes Parallel Streams work.</li>
+</ul>
+<h3 id="2-the-core-concept-divide-and-conquer">2. The Core Concept: Divide and Conquer<a hidden class="anchor" aria-hidden="true" href="#2-the-core-concept-divide-and-conquer">#</a></h3>
+<p>The <code>ForkJoinPool</code> uses a strategy called <strong>Work-Stealing</strong>.</p>
+<ol>
+<li><strong>Fork:</strong> A large task is split into smaller sub-tasks until they are small enough to handle.</li>
+<li><strong>Join:</strong> The results of the sub-tasks are combined back together.</li>
+<li><strong>Work-Stealing:</strong> If Worker Thread A finishes its pile of work early, it &ldquo;steals&rdquo; a task from the bottom of Worker Thread B&rsquo;s pile to keep the CPU busy.</li>
+</ol>
+<hr>
+<h3 id="3-the-golden-snippet-parallel-stream-vs-sequential">3. The &ldquo;Golden&rdquo; Snippet: Parallel Stream vs. Sequential<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-parallel-stream-vs-sequential">#</a></h3>
+<p>Notice how little code changes to get a massive performance boost on large datasets.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.List;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.stream.LongStream;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ParallelAnalysis</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span><span style="color:#f92672">[]</span> numbers <span style="color:#f92672">=</span> LongStream.<span style="color:#a6e22e">rangeClosed</span>(1, 10_000_000).<span style="color:#a6e22e">toArray</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 1. SEQUENTIAL (Uses 1 Core)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> sum1 <span style="color:#f92672">=</span> LongStream.<span style="color:#a6e22e">of</span>(numbers).<span style="color:#a6e22e">sum</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Sequential Time: &#34;</span> <span style="color:#f92672">+</span> (System.<span style="color:#a6e22e">currentTimeMillis</span>() <span style="color:#f92672">-</span> start) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;ms&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 2. PARALLEL (Uses ALL Cores)</span>
+</span></span><span style="display:flex;"><span>        start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> sum2 <span style="color:#f92672">=</span> LongStream.<span style="color:#a6e22e">of</span>(numbers).<span style="color:#a6e22e">parallel</span>().<span style="color:#a6e22e">sum</span>();
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Parallel Time: &#34;</span> <span style="color:#f92672">+</span> (System.<span style="color:#a6e22e">currentTimeMillis</span>() <span style="color:#f92672">-</span> start) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;ms&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ul>
+<li><strong><code>.parallel()</code></strong>: This tells Java to use the common <code>ForkJoinPool</code>.</li>
+<li><strong>Splitting:</strong> The <code>LongStream</code> is divided into chunks. Thread 1 sums 1–2.5M, Thread 2 sums 2.5M–5M, and so on.</li>
+<li><strong>Merging:</strong> Once all threads finish, their partial sums are added together to produce the final result.</li>
+</ul>
+<hr>
+<h3 id="4-the-common-forkjoinpool">4. The &ldquo;Common&rdquo; ForkJoinPool<a hidden class="anchor" aria-hidden="true" href="#4-the-common-forkjoinpool">#</a></h3>
+<p>By default, all Parallel Streams share a single pool: <code>ForkJoinPool.commonPool()</code>.</p>
+<ul>
+<li><strong>Size:</strong> This pool is automatically sized to $Number of Cores - 1$.</li>
+<li><strong>The Danger:</strong> Since the pool is <strong>global</strong>, if you run a blocking IO operation (like a slow API call) inside a Parallel Stream, you effectively &ldquo;clog&rdquo; the pool for every other part of your application.</li>
+</ul>
+<hr>
+<h3 id="5-when-not-to-use-parallel-streams">5. When NOT to use Parallel Streams<a hidden class="anchor" aria-hidden="true" href="#5-when-not-to-use-parallel-streams">#</a></h3>
+<p>Parallelism has &ldquo;overhead&rdquo; (splitting the data and merging it takes time).</p>
+<ul>
+<li><strong>Rule of NQ:</strong> A rough formula for deciding if parallelism is worth it is $N \times Q &gt; 10,000$.
+<ul>
+<li><strong>N</strong>: Number of data elements.</li>
+<li><strong>Q</strong>: Amount of work per element.</li>
+</ul>
+</li>
+<li><strong>Small Data:</strong> If you only have 100 items, the cost of starting threads is higher than the time saved.</li>
+<li><strong>Linked Data:</strong> <code>ArrayList</code> is great for parallel streams because it&rsquo;s easy to split. <code>LinkedList</code> is terrible because you have to traverse it from the start to find the middle.</li>
+</ul>
+<hr>
+<h3 id="6-summary-comparison">6. Summary Comparison<a hidden class="anchor" aria-hidden="true" href="#6-summary-comparison">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left">Sequential Stream</th>
+          <th style="text-align: left">Parallel Stream</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Execution</strong></td>
+          <td style="text-align: left">One thread.</td>
+          <td style="text-align: left">Multiple threads (ForkJoinPool).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Order</strong></td>
+          <td style="text-align: left">Guaranteed.</td>
+          <td style="text-align: left">Not guaranteed (unless using <code>.forEachOrdered</code>).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>State</strong></td>
+          <td style="text-align: left">Can be stateful.</td>
+          <td style="text-align: left"><strong>Must be stateless</strong> (Avoid shared variables!).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Best For</strong></td>
+          <td style="text-align: left">Small data / IO tasks.</td>
+          <td style="text-align: left">Massive data / CPU-heavy math.</td>
+      </tr>
+  </tbody>
+</table>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

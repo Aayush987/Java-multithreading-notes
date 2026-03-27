@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Recursive Task | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="While Parallel Streams are the &ldquo;automatic transmission&rdquo; of the ForkJoinPool, RecursiveTask is the &ldquo;manual transmission.&rdquo; It gives you full control over how a large problem is sliced into smaller pieces and how those pieces are joined back together.
+It is the core class you extend to implement the Divide and Conquer strategy for tasks that return a result.
+
+1. The &ldquo;Why&rdquo;
+Sometimes your data doesn&rsquo;t fit into a simple Stream. For example, if you are:">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/more-advanced-topics/recursivetask/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/more-advanced-topics/recursivetask/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Recursive Task
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>While <strong>Parallel Streams</strong> are the &ldquo;automatic transmission&rdquo; of the ForkJoinPool, <strong><code>RecursiveTask</code></strong> is the &ldquo;manual transmission.&rdquo; It gives you full control over how a large problem is sliced into smaller pieces and how those pieces are joined back together.</p>
+<p>It is the core class you extend to implement the <strong>Divide and Conquer</strong> strategy for tasks that return a result.</p>
+<hr>
+<h3 id="1-the-why">1. The &ldquo;Why&rdquo;<a hidden class="anchor" aria-hidden="true" href="#1-the-why">#</a></h3>
+<p>Sometimes your data doesn&rsquo;t fit into a simple <code>Stream</code>. For example, if you are:</p>
+<ul>
+<li>Processing a complex file directory tree.</li>
+<li>Running a recursive mathematical algorithm (like Fibonacci or Merge Sort).</li>
+<li>Analyzing a custom data structure that isn&rsquo;t a standard Collection.</li>
+</ul>
+<p>In these cases, you need a way to say: <em>&ldquo;If this task is too big, split it. If it&rsquo;s small enough, just do it.&rdquo;</em></p>
+<hr>
+<h3 id="2-the-mechanics-the-compute-method">2. The Mechanics: The &ldquo;Compute&rdquo; Method<a hidden class="anchor" aria-hidden="true" href="#2-the-mechanics-the-compute-method">#</a></h3>
+<p>When you extend <code>RecursiveTask&lt;V&gt;</code>, you must implement the <code>compute()</code> method. This method follows a standard template:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (task is small enough) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> solve it sequentially;
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    Split task into Task A and Task B;
+</span></span><span style="display:flex;"><span>    Task A.<span style="color:#a6e22e">fork</span>();             <span style="color:#75715e">// Push Task A to the pool (asynchronous)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Task B.<span style="color:#a6e22e">compute</span>()    <span style="color:#75715e">// Do Task B in the current thread</span>
+</span></span><span style="display:flex;"><span>           <span style="color:#f92672">+</span> Task A.<span style="color:#a6e22e">join</span>();    <span style="color:#75715e">// Wait for Task A and combine results</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="3-the-golden-snippet-summing-a-massive-array">3. The &ldquo;Golden&rdquo; Snippet: Summing a Massive Array<a hidden class="anchor" aria-hidden="true" href="#3-the-golden-snippet-summing-a-massive-array">#</a></h3>
+<p>Let&rsquo;s look at how we manually implement a parallel sum using a <code>RecursiveTask</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.RecursiveTask;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.ForkJoinPool;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ArraySumTask</span> <span style="color:#66d9ef">extends</span> RecursiveTask<span style="color:#f92672">&lt;</span>Long<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span><span style="color:#f92672">[]</span> array;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> start, end;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> THRESHOLD <span style="color:#f92672">=</span> 10_000; <span style="color:#75715e">// Small enough to do sequentially</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ArraySumTask</span>(<span style="color:#66d9ef">long</span><span style="color:#f92672">[]</span> array, <span style="color:#66d9ef">int</span> start, <span style="color:#66d9ef">int</span> end) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">array</span> <span style="color:#f92672">=</span> array;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">start</span> <span style="color:#f92672">=</span> start;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">end</span> <span style="color:#f92672">=</span> end;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">protected</span> Long <span style="color:#a6e22e">compute</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 1. BASE CASE: Is the work small enough?</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (end <span style="color:#f92672">-</span> start <span style="color:#f92672">&lt;=</span> THRESHOLD) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> start; i <span style="color:#f92672">&lt;</span> end; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                sum <span style="color:#f92672">+=</span> array<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> sum;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 2. RECURSIVE STEP: Split the work in half</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> mid <span style="color:#f92672">=</span> start <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start) <span style="color:#f92672">/</span> 2;
+</span></span><span style="display:flex;"><span>            ArraySumTask leftTask <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArraySumTask(array, start, mid);
+</span></span><span style="display:flex;"><span>            ArraySumTask rightTask <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArraySumTask(array, mid, end);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 3. FORK: Send the left task to another thread</span>
+</span></span><span style="display:flex;"><span>            leftTask.<span style="color:#a6e22e">fork</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 4. COMPUTE &amp; JOIN: Do the right half and wait for the left half</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> rightResult <span style="color:#f92672">=</span> rightTask.<span style="color:#a6e22e">compute</span>(); 
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> leftResult <span style="color:#f92672">=</span> leftTask.<span style="color:#a6e22e">join</span>(); 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> leftResult <span style="color:#f92672">+</span> rightResult;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">long</span><span style="color:#f92672">[</span>100_000<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// ... fill data ...</span>
+</span></span><span style="display:flex;"><span>        ForkJoinPool pool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ForkJoinPool();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> total <span style="color:#f92672">=</span> pool.<span style="color:#a6e22e">invoke</span>(<span style="color:#66d9ef">new</span> ArraySumTask(data, 0, data.<span style="color:#a6e22e">length</span>));
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Total Sum: &#34;</span> <span style="color:#f92672">+</span> total);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="code-explanation">Code Explanation:<a hidden class="anchor" aria-hidden="true" href="#code-explanation">#</a></h4>
+<ul>
+<li><strong><code>THRESHOLD</code></strong>: This is the most important variable. If it&rsquo;s too high, you don&rsquo;t use your CPU cores. If it&rsquo;s too low (e.g., 1), the overhead of creating Task objects will make your program much slower than a simple loop.</li>
+<li><strong><code>fork()</code></strong>: This puts the task into the <strong>Work-Stealing</strong> queue. It doesn&rsquo;t necessarily start a new thread immediately; it just makes the work &ldquo;available&rdquo; for any idle thread in the pool to &ldquo;steal.&rdquo;</li>
+<li><strong><code>join()</code></strong>: This is a &ldquo;blocking&rdquo; call, but it&rsquo;s a &ldquo;smart block.&rdquo; While waiting for the result, the current thread can go off and help with other tasks in the pool.</li>
+</ul>
+<hr>
+<h3 id="4-the-gotchas">4. The Gotchas<a hidden class="anchor" aria-hidden="true" href="#4-the-gotchas">#</a></h3>
+<ul>
+<li><strong>The &ldquo;Lopsided&rdquo; Split:</strong> Always try to split your data as evenly as possible (usually 50/50). If you split it 1/99, one thread will do all the work while others stay idle.</li>
+<li><strong><code>RecursiveAction</code> vs <code>RecursiveTask</code></strong>: If your task doesn&rsquo;t return a result (like a parallel &ldquo;Sort&rdquo; that modifies an array in place), use <code>RecursiveAction</code> instead.</li>
+<li><strong>The <code>join()</code> Order:</strong> Always call <code>fork()</code> then <code>compute()</code> then <code>join()</code>. If you call <code>fork()</code> and then immediately <code>join()</code>, you&rsquo;ve just made your program sequential because the thread stops and waits instead of doing the second half of the work!</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

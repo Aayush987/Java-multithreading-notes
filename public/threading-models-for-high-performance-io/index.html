@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Threading Models For High Performance IO | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="Threading Models For High Performance IO - Study Notes">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/threading-models-for-high-performance-io/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/threading-models-for-high-performance-io/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/threading-models-for-high-performance-io/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Threading Models For High Performance IO
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Asynchronous, Non-Blocking IO - Thread-per-Core
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” In the previous “Thread-per-Task” model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time “Context Switching” (saving the state of Thread 1 to load Thread 2). This is inefficient.
+The Thread-per-Core Goal: Create exactly one thread for every physical CPU core. These threads never block. If a thread needs to read from a socket and the data isn’t there, it doesn’t sleep; it moves to the next socket immediately.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Asynchronous, Non-Blocking IO - Thread-per-Core" href="http://localhost:1313/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Introduction to Blocking IO
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” Blocking IO is the “classic” way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.
+The Problem: If you have 1,000 users and each requires a blocking thread, you need 1,000 threads. Threads are expensive—they consume memory (Stack) and cause “Context Switching” overhead. 2. Comparison: Blocking IO vs. Non-Blocking IO (NIO) Feature Blocking IO (BIO) Non-Blocking IO (NIO) Thread Behavior Thread “stops” and waits for data. Thread “asks” and moves on if data isn’t ready. Efficiency High for single, long-lived connections. High for thousands of concurrent connections. Complexity Simple (Sequential code). High (Requires Event Loops/Callbacks). Scalability Limited by Thread Count / Memory. Limited by CPU / Network Bandwidth. 3. The “Golden” Snippet: The Standard Blocking Server This is a classic “One Thread Per Connection” model. It works fine for a few users, but it scales poorly.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Introduction to Blocking IO" href="http://localhost:1313/threading-models-for-high-performance-io/introduction_to_blockingio/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Thread Per Task / Thread Per Request Model
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” In a standard web application, a “task” is usually a single HTTP request.
+The Goal: Isolate users from each other. If User A’s request takes 10 seconds to process a heavy database query, User B should still get their response in 100ms on a different thread. The Implementation: The server maintains a “Thread Pool.” When a request arrives, the “Boss” thread grabs a “Worker” thread from the pool, hands it the socket, and says, “Call me when you’re done.” 2. Comparison: One Thread vs. Thread Pool (Thread-Per-Task) Feature Single Threaded Thread-Per-Task (Pool) Concurrency None (One at a time). High (N tasks at a time). Isolation One crash kills the server. One crash only kills that thread. Throughput Very Low. High (Parallel processing). Blocking One slow DB call stops everyone. Only that specific worker thread is blocked. 3. The “Golden” Snippet: Executor-Based Web Server Instead of creating a new Thread() every time (which is slow), we use a FixedThreadPool to reuse existing threads.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Thread Per Task / Thread Per Request Model" href="http://localhost:1313/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

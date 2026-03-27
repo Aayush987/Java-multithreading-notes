@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Virtual Threads - Deep Dive | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="To understand what Virtual Threads do under the hood, we have to look at the &ldquo;Magic&rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.
+Before Java 21, a Java Thread was just a thin wrapper around an OS Thread. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.
+1. The Architecture: M:N Scheduling
+Virtual Threads introduce a &ldquo;layered&rdquo; approach. Instead of a 1:1 relationship with the OS, we now have an M:N relationship.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/virtual-threads-and-high-performance-io/virtualthreads_deepdive/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/virtual-threads-and-high-performance-io/virtualthreads_deepdive/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Virtual Threads - Deep Dive
+    </h1>
+    <div class="post-meta"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p>To understand what Virtual Threads do under the hood, we have to look at the &ldquo;Magic&rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.</p>
+<p>Before Java 21, a <strong>Java Thread</strong> was just a thin wrapper around an <strong>OS Thread</strong>. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.</p>
+<h3 id="1-the-architecture-mn-scheduling">1. The Architecture: M:N Scheduling<a hidden class="anchor" aria-hidden="true" href="#1-the-architecture-mn-scheduling">#</a></h3>
+<p>Virtual Threads introduce a &ldquo;layered&rdquo; approach. Instead of a 1:1 relationship with the OS, we now have an <strong>M:N relationship</strong>.</p>
+<ul>
+<li><strong>Virtual Threads (The &ldquo;M&rdquo;):</strong> These are cheap, &ldquo;user-mode&rdquo; threads managed by the <strong>Java Virtual Machine (JVM)</strong>. They are stored as objects on the Java Heap, not as expensive OS resources.</li>
+<li><strong>Carrier Threads (The &ldquo;N&rdquo;):</strong> These are standard OS threads (usually in a <code>ForkJoinPool</code>). These are the &ldquo;engines&rdquo; that actually run the Virtual Threads.</li>
+</ul>
+<hr>
+<h3 id="2-the-mechanics-mounting-and-unmounting">2. The Mechanics: Mounting and Unmounting<a hidden class="anchor" aria-hidden="true" href="#2-the-mechanics-mounting-and-unmounting">#</a></h3>
+<p>The &ldquo;magic&rdquo; happens when a Virtual Thread performs a <strong>Blocking IO</strong> operation (like reading from a database or a socket).</p>
+<ol>
+<li><strong>Mounting:</strong> The JVM scheduler takes a Virtual Thread from a queue and &ldquo;mounts&rdquo; it onto a <strong>Carrier Thread</strong>. The Carrier Thread starts executing the code.</li>
+<li><strong>The Roadblock:</strong> Your code hits a blocking call: <code>inputStream.read()</code>.</li>
+<li><strong>Unmounting (The Secret Sauce):</strong> * Instead of the OS thread freezing, the JVM <strong>captures the state</strong> (the stack frame) of the Virtual Thread and moves it to the <strong>Java Heap</strong>.
+<ul>
+<li>The Virtual Thread is &ldquo;unmounted.&rdquo;</li>
+<li>The <strong>Carrier Thread is now free!</strong> It immediately picks up a <em>different</em> Virtual Thread to work on.</li>
+</ul>
+</li>
+<li><strong>Resuming:</strong> Once the OS signals that the data is ready (via non-blocking IO under the hood), the JVM scheduler puts the original Virtual Thread back in the queue. It will eventually be <strong>remounted</strong> onto any available Carrier Thread to finish its job.</li>
+</ol>
+<hr>
+<h3 id="3-comparison-how-they-save-resources">3. Comparison: How they save resources<a hidden class="anchor" aria-hidden="true" href="#3-comparison-how-they-save-resources">#</a></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Action</th>
+          <th style="text-align: left">Platform Thread (Old)</th>
+          <th style="text-align: left">Virtual Thread (New)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Creation</strong></td>
+          <td style="text-align: left">Involves a System Call (Slow).</td>
+          <td style="text-align: left">Just an Object allocation (Fast).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Memory</strong></td>
+          <td style="text-align: left">~1MB reserved for Stack.</td>
+          <td style="text-align: left">~Hundreds of bytes on the Heap.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Blocking</strong></td>
+          <td style="text-align: left">Thread is &ldquo;stuck&rdquo; (idling CPU).</td>
+          <td style="text-align: left">Thread is &ldquo;parked&rdquo; (releasing CPU).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Context Switch</strong></td>
+          <td style="text-align: left">OS Kernel (Heavy).</td>
+          <td style="text-align: left">JVM Scheduler (Lightweight).</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h3 id="4-why-they-arent-faster-for-math">4. Why they aren&rsquo;t &ldquo;Faster&rdquo; for Math<a hidden class="anchor" aria-hidden="true" href="#4-why-they-arent-faster-for-math">#</a></h3>
+<p>It is a common misconception that Virtual Threads make your code run faster.</p>
+<ul>
+<li>If you have a loop calculating Pi to a billion digits, a Virtual Thread will take exactly as much time as a Platform Thread.</li>
+<li>Virtual Threads provide <strong>Scalability (Throughput)</strong>, not <strong>Speed (Latency)</strong>. They allow a single server to handle 1,000,000 simultaneous &ldquo;waiters&rdquo; without needing 1,000,000 expensive OS threads.</li>
+</ul>
+<hr>
+<h3 id="5-the-pinning-trap">5. The &ldquo;Pinning&rdquo; Trap<a hidden class="anchor" aria-hidden="true" href="#5-the-pinning-trap">#</a></h3>
+<p>The only time the &ldquo;under the hood&rdquo; magic fails is during <strong>Pinning</strong>. If a Virtual Thread is inside a <code>synchronized</code> block or calling a Native (C/C++) method, the JVM cannot unmount it. The Virtual Thread becomes &ldquo;stuck&rdquo; to the Carrier Thread, effectively turning it back into an expensive Platform Thread until the block is finished.</p>
+<blockquote>
+<p><strong>Pro-Tip:</strong> This is why the Java community is moving away from <code>synchronized</code> and toward <code>ReentrantLock</code>, which does not cause pinning.</p>
+</blockquote>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

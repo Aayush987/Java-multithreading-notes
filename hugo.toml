@@ -1,0 +1,6 @@
+baseURL = 'https://Aayush987.github.io/'
+locale = 'en-us'
+title = 'Study Notes'
+theme = "PaperMod"
+[params]
+  mainSections = []

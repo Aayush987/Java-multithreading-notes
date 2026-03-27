@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Data Sharing Between Threads on Study Notes</title>
+    <link>http://localhost:1313/data-sharing-between-threads/</link>
+    <description>Recent content in Data Sharing Between Threads on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/data-sharing-between-threads/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Resource Sharing &amp; Critical Sections (Deep Dive)</title>
+      <link>http://localhost:1313/data-sharing-between-threads/resourcesharing_introtocriticalsection/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/data-sharing-between-threads/resourcesharing_introtocriticalsection/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In multithreading, a &lt;strong&gt;Critical Section&lt;/strong&gt; is any segment of code that accesses a shared resource (like a variable, a file, or a database connection) where at least one thread is performing a &lt;strong&gt;write&lt;/strong&gt; operation.&lt;/p&gt;
+&lt;p&gt;The problem is that most high-level operations (like &lt;code&gt;count++&lt;/code&gt;) are not &lt;strong&gt;atomic&lt;/strong&gt;. To the CPU, &lt;code&gt;count++&lt;/code&gt; is actually three distinct steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Load:&lt;/strong&gt; Move the value from the Main Memory (Heap) into a CPU Register.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Increment:&lt;/strong&gt; Add 1 to the value inside the Register.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Store:&lt;/strong&gt; Move the new value from the Register back to Main Memory.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If Thread A is &amp;ldquo;paused&amp;rdquo; (context-switched) after Step 2, and Thread B performs all three steps, Thread A will eventually wake up and overwrite Thread B&amp;rsquo;s work with an outdated value. This is a &lt;strong&gt;Race Condition&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Stack vs. Heap Memory Regions</title>
+      <link>http://localhost:1313/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</link>
+      <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</guid>
+      <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
+&lt;p&gt;In a multithreaded application, we need to know where data lives to understand its visibility. If data is on the &lt;strong&gt;Stack&lt;/strong&gt;, it is private and safe. If data is on the &lt;strong&gt;Heap&lt;/strong&gt;, it is shared and potentially dangerous. This distinction determines whether we need synchronization (locks/mutexes) or if the code is &amp;ldquo;thread-safe&amp;rdquo; by design.&lt;/p&gt;
+&lt;h3 id=&#34;2-visual-logic&#34;&gt;2. Visual Logic&lt;/h3&gt;
+&lt;p&gt;Every thread gets its own private &lt;strong&gt;Stack&lt;/strong&gt;, but all threads share a single, massive &lt;strong&gt;Heap&lt;/strong&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

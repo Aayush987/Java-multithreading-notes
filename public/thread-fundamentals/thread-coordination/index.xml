@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Thread Coordination on Study Notes</title>
+    <link>http://localhost:1313/thread-fundamentals/thread-coordination/</link>
+    <description>Recent content in Thread Coordination on Study Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 26 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/thread-fundamentals/thread-coordination/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Joining Threads</title>
+      <link>http://localhost:1313/thread-fundamentals/thread-coordination/joining-threads/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/thread-fundamentals/thread-coordination/joining-threads/</guid>
+      <description>&lt;h1 id=&#34;thread-coordination---part-2-joining-threads&#34;&gt;Thread Coordination - Part 2: Joining Threads&lt;/h1&gt;
+&lt;h2 id=&#34;1-the-problem-the-race-to-the-finish&#34;&gt;1. The Problem: The &amp;ldquo;Race&amp;rdquo; to the Finish&lt;/h2&gt;
+&lt;p&gt;When you start a thread, it runs independently. If the &lt;code&gt;main&lt;/code&gt; thread needs the result of &lt;code&gt;Thread-A&lt;/code&gt; to perform a calculation, &lt;code&gt;main&lt;/code&gt; might finish before &lt;code&gt;Thread-A&lt;/code&gt; even starts, leading to &lt;code&gt;null&lt;/code&gt; results or crashes.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-the-solution-threadjoin&#34;&gt;2. The Solution: &lt;code&gt;thread.join()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;join()&lt;/code&gt; method allows the calling thread (e.g., &lt;code&gt;main&lt;/code&gt;) to go into a &lt;strong&gt;Waiting&lt;/strong&gt; state until the target thread finishes its execution.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thread Termination &amp; Daemon Threads</title>
+      <link>http://localhost:1313/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
+      <description>&lt;h1 id=&#34;thread-termination--daemon-threads&#34;&gt;Thread Termination &amp;amp; Daemon Threads&lt;/h1&gt;
+&lt;h2 id=&#34;1-why-is-termination-tricky&#34;&gt;1. Why is Termination Tricky?&lt;/h2&gt;
+&lt;p&gt;Threads consume resources (Memory, CPU, File Handles). If a thread finishes its task but stays alive, it&amp;rsquo;s a &lt;strong&gt;Resource Leak&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We cannot use the &lt;code&gt;stop()&lt;/code&gt; method (it is deprecated and dangerous).&lt;/li&gt;
+&lt;li&gt;We must use &lt;strong&gt;Cooperative Termination&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-method-1-the-interrupt-signal&#34;&gt;2. Method 1: The Interrupt Signal&lt;/h2&gt;
+&lt;p&gt;Interrupting is a way for one thread to signal another: &amp;ldquo;Please stop what you are doing.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;scenario-a-thread-is-blocking-sleepingwaiting&#34;&gt;Scenario A: Thread is Blocking (Sleeping/Waiting)&lt;/h3&gt;
+&lt;p&gt;If a thread is executing a method like &lt;code&gt;Thread.sleep()&lt;/code&gt; or &lt;code&gt;wait()&lt;/code&gt;, it will throw an &lt;code&gt;InterruptedException&lt;/code&gt; when interrupted.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

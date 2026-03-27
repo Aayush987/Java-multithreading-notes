@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>LockFree Algorithms &amp; Data Structures | Study Notes</title>
+<meta name="keywords" content="">
+<meta name="description" content="LockFree Algorithms &amp; Data Structures - Study Notes">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/lockfree-algorithms/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.4ef2299ae814559c4055cd3d15919aff78737e44fa7af337c506246832ba458a.css" integrity="sha256-TvIpmugUVZxAVc09FZGa/3hzfkT6evM3xQYkaDK6RYo=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/lockfree-algorithms/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/lockfree-algorithms/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    LockFree Algorithms &amp; Data Structures
+  </h1>
+</header>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">1. AtomicReference -  Object Swapping
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>The Concept: While AtomicInteger works for primitives, AtomicReference&lt;V&gt; allows you to update a reference to an entire object as a single atomic unit. This is the foundation of “Immutable State” updates.
+import java.util.concurrent.atomic.AtomicReference; public class ConfigManager { // A shared configuration object that many threads read private final AtomicReference&lt;Config&gt; currentConfig = new AtomicReference&lt;&gt;(new Config(&#34;v1&#34;)); public void updateConfig(String newVersion) { Config oldConfig; Config newConfig = new Config(newVersion); do { oldConfig = currentConfig.get(); // Snapshot of the pointer // We don&#39;t modify oldConfig; we create a whole new one! } while (!currentConfig.compareAndSet(oldConfig, newConfig)); System.out.println(&#34;Config updated to: &#34; &#43; newVersion); } } class Config { final String version; Config(String v) { this.version = v; } } Explanation:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to 1. AtomicReference -  Object Swapping" href="http://localhost:1313/lockfree-algorithms/atomicreferencescompareandsetexamples/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Atomic Integers &amp; Lock-Free E-commerce
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” In an e-commerce platform, the “Inventory Count” is the most contested variable.
+The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,999 threads to sleep while 1 thread works. The overhead of waking them all up is higher than the actual work of subtracting 1 from the inventory. The Atomic Solution: AtomicInteger uses the CPU’s native ability to “reserve” a memory address for a nanosecond, update it, and release it without ever suspending a thread. 2. Comparison: Synchronized vs. AtomicInteger Feature synchronized int AtomicInteger Mechanism Blocking (Pessimistic). Lock-Free (Optimistic CAS). Thread State Threads become BLOCKED. Threads stay RUNNABLE (Spinning). Performance High contention = slow. High contention = fast (until CPU saturation). Operations Manual count&#43;&#43; (3 steps). Atomic decrementAndGet() (1 step). 3. The “Golden” Snippet: High-Traffic Inventory This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single synchronized block.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Atomic Integers & Lock-Free E-commerce" href="http://localhost:1313/lockfree-algorithms/atomicinteger_lockfree/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Atomic References &amp; Lock-Free Data Structures
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” If you want to update a complex object (like a User profile or a Node in a list) across multiple threads, you usually have to lock the entire object. AtomicReference allows you to swap an entire object reference atomically. It says: “Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.”
+2. Comparison: Synchronized Object vs. AtomicReference Feature synchronized (obj) AtomicReference&lt;T&gt; Safety Prevents multiple threads from entering. Prevents “stale” updates via CAS. Blocking Yes (Threads sleep). No (Threads “spin” and retry). Granularity Locks the whole block of code. Only protects the reference (the pointer). Performance High overhead for small updates. Extremely fast for “pointer swapping.” 3. The “Golden” Snippet: A Lock-Free Stack A standard Stack uses synchronized on push and pop. In this high-performance version, we use AtomicReference to manage the “Head” of the stack without any locks.
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Atomic References & Lock-Free Data Structures" href="http://localhost:1313/lockfree-algorithms/atomicreferences__compareset/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Introduction to Non-Blocking &amp; Lock-Free Operations
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>1. The “Why” Traditional locks (synchronized, ReentrantLock) have major downsides:
+Deadlocks: Threads waiting for each other forever. Priority Inversion: A low-priority thread holding a lock prevents a high-priority thread from running. Performance Overhead: Suspending and resuming a thread (context switching) is expensive for the OS. Lock-Free operations use hardware-level atomic instructions to ensure that at least one thread always makes progress, even if others are interrupted or fail.
+2. Comparison: Blocking vs. Lock-Free (Non-Blocking) Feature Blocking (Locks) Lock-Free (Non-Blocking) Philosophy “Pessimistic” - Assume trouble and lock the door. “Optimistic” - Assume success and retry if failed. Hardware Tool Mutex / Monitors. CAS (Compare-And-Swap) instructions. Deadlock Risk High. Zero. Throughput Limited by lock contention. High (Scales better with more CPU cores). Complexity Simple to write and reason about. Extremely difficult to design correctly. 3. The “Golden” Snippet: Atomic Compare-And-Swap (CAS) The heart of every lock-free algorithm is the CAS operation. It is a single CPU instruction that says: “If the value in memory is X, change it to Y. If it’s not X anymore, don’t do anything and tell me I failed.”
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2026-03-27 00:00:00 +0000 UTC'>March 27, 2026</span></footer>
+  <a class="entry-link" aria-label="post link to Introduction to Non-Blocking & Lock-Free Operations" href="http://localhost:1313/lockfree-algorithms/intro_to_lockfree_nonblocking/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Study Notes</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
