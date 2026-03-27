@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Thread Creation on Study Notes</title>
-    <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/</link>
     <description>Recent content in Thread Creation on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 26 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/thread-fundamentals/thread-creation/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Thread Inheritance</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-inheritance/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-inheritance/</guid>
       <description>&lt;h1 id=&#34;thread-creation---part-2-thread-inheritance&#34;&gt;Thread Creation - Part 2: Thread Inheritance&lt;/h1&gt;
 &lt;h2 id=&#34;1-the-concept-extending-the-thread-class&#34;&gt;1. The Concept: Extending the Thread Class&lt;/h2&gt;
 &lt;p&gt;Instead of passing a &lt;code&gt;Runnable&lt;/code&gt; object to a new Thread instance, we create a specialized class that &lt;strong&gt;is&lt;/strong&gt; a Thread. This is done using the &lt;code&gt;extends&lt;/code&gt; keyword.&lt;/p&gt;
@@ -26,9 +26,9 @@
     </item>
     <item>
       <title>Thread Introduction</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-introduction/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-introduction/</guid>
       <description>&lt;h1 id=&#34;thread-creation-part-1-capabilites--debugging&#34;&gt;Thread Creation Part 1 Capabilites &amp;amp; Debugging&lt;/h1&gt;
 &lt;h2 id=&#34;1-core-concept-thread-vs-process&#34;&gt;1. Core Concept: Thread vs. Process&lt;/h2&gt;
 &lt;p&gt;Before diving into code, it is vital to understand the &amp;ldquo;Container&amp;rdquo; relationship:&lt;/p&gt;

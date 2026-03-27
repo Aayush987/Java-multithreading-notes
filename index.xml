@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Study Notes</title>
-    <link>https://Aayush987.github.io/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/</link>
     <description>Recent content on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>1. AtomicReference -  Object Swapping</title>
-      <link>https://Aayush987.github.io/lockfree-algorithms/atomicreferencescompareandsetexamples/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferencescompareandsetexamples/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicreferencescompareandsetexamples/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferencescompareandsetexamples/</guid>
       <description>&lt;p&gt;&lt;strong&gt;The Concept:&lt;/strong&gt; While &lt;code&gt;AtomicInteger&lt;/code&gt; works for primitives, &lt;code&gt;AtomicReference&amp;lt;V&amp;gt;&lt;/code&gt; allows you to update a reference to an entire object as a single atomic unit. This is the foundation of &amp;ldquo;Immutable State&amp;rdquo; updates.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; java.util.concurrent.atomic.AtomicReference;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
@@ -41,18 +41,18 @@
     </item>
     <item>
       <title>Asynchronous, Non-Blocking IO - Thread-per-Core</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In the previous &amp;ldquo;Thread-per-Task&amp;rdquo; model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time &amp;ldquo;Context Switching&amp;rdquo; (saving the state of Thread 1 to load Thread 2). This is inefficient.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;The Thread-per-Core Goal:&lt;/strong&gt; Create exactly one thread for every physical CPU core. These threads &lt;strong&gt;never block&lt;/strong&gt;. If a thread needs to read from a socket and the data isn&amp;rsquo;t there, it doesn&amp;rsquo;t sleep; it moves to the next socket immediately.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Atomic Integers &amp; Lock-Free E-commerce</title>
-      <link>https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In an e-commerce platform, the &amp;ldquo;Inventory Count&amp;rdquo; is the most contested variable.&lt;/p&gt;
 &lt;ul&gt;
@@ -97,9 +97,9 @@
     </item>
     <item>
       <title>Atomic Operations, Volatile, &amp; Metrics</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Traditional locking (&lt;code&gt;synchronized&lt;/code&gt;) is &amp;ldquo;heavy.&amp;rdquo; It involves suspending threads, context switching, and OS overhead. &lt;strong&gt;Atomic Operations&lt;/strong&gt; allow us to perform &amp;ldquo;Read-Modify-Write&amp;rdquo; cycles as a single, uninterruptible unit at the hardware level. The &lt;code&gt;volatile&lt;/code&gt; keyword ensures that changes made by one thread are immediately visible to others, preventing &amp;ldquo;stale data&amp;rdquo; bugs caused by CPU caching.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-volatile-vs-atomic-vs-synchronized&#34;&gt;2. Comparison: Volatile vs. Atomic vs. Synchronized&lt;/h3&gt;
@@ -145,9 +145,9 @@
     </item>
     <item>
       <title>Atomic References &amp; Lock-Free Data Structures</title>
-      <link>https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferences__compareset/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferences__compareset/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;If you want to update a complex object (like a &lt;code&gt;User&lt;/code&gt; profile or a &lt;code&gt;Node&lt;/code&gt; in a list) across multiple threads, you usually have to lock the entire object.
 &lt;strong&gt;AtomicReference&lt;/strong&gt; allows you to swap an entire object reference atomically. It says: &amp;ldquo;Only change the pointer from Object A to Object B if the pointer is still pointing at Object A.&amp;rdquo;&lt;/p&gt;
@@ -189,9 +189,9 @@
     </item>
     <item>
       <title>Condition Variables - Inter-Thread Communication</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/condition_variables/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/condition_variables/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/condition_variables/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/condition_variables/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Sometimes a thread has the lock but cannot proceed because the data isn&amp;rsquo;t ready (e.g., a Consumer finds an empty queue).&lt;/p&gt;
 &lt;ul&gt;
@@ -236,9 +236,9 @@
     </item>
     <item>
       <title>Critical Section &amp; Synchronization</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;We need a way to make a sequence of operations &lt;strong&gt;Atomic&lt;/strong&gt; (all-or-nothing). Since the CPU can interrupt a thread at any micro-instruction, we use &lt;strong&gt;Mutual Exclusion (Mutex)&lt;/strong&gt;. This ensures that if Thread A is halfway through an update, Thread B is physically blocked from starting that same update until Thread A finishes.&lt;/p&gt;
 &lt;h3 id=&#34;2-visual-logic-the-monitorlock-concept&#34;&gt;2. Visual Logic: The Monitor/Lock Concept&lt;/h3&gt;
@@ -246,9 +246,9 @@
     </item>
     <item>
       <title>Deep Dive- Synchronization in Action</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;We use synchronization to prevent &lt;strong&gt;Data Corruption&lt;/strong&gt;. Without it, two threads can &amp;ldquo;read&amp;rdquo; the same initial value, perform an operation, and &amp;ldquo;write&amp;rdquo; back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).&lt;/p&gt;
 &lt;h3 id=&#34;2-detailed-code-explanation&#34;&gt;2. Detailed Code Explanation&lt;/h3&gt;
@@ -281,9 +281,9 @@
     </item>
     <item>
       <title>High-Performance IO with Virtual Threads</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
       <description>&lt;p&gt;This section is the culmination of everything we&amp;rsquo;ve learned about IO. It explains how &lt;strong&gt;Virtual Threads&lt;/strong&gt; allow us to write code that &lt;em&gt;looks&lt;/em&gt; like the old &amp;ldquo;Thread-per-Request&amp;rdquo; model but &lt;em&gt;performs&lt;/em&gt; like the &amp;ldquo;Asynchronous/NIO&amp;rdquo; model.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In the previous NIO (Non-Blocking) models, we had to break our logic into &amp;ldquo;callbacks&amp;rdquo; or &amp;ldquo;promises.&amp;rdquo; This made error handling and stack traces a nightmare.
@@ -335,9 +335,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Introduction to Blocking IO</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Blocking IO&lt;/strong&gt; is the &amp;ldquo;classic&amp;rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.&lt;/p&gt;
 &lt;ul&gt;
@@ -381,9 +381,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Introduction to Non-Blocking &amp; Lock-Free Operations</title>
-      <link>https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Traditional locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) have major downsides:&lt;/p&gt;
 &lt;ul&gt;
@@ -435,9 +435,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Introduction to Performance &amp; Optimization for Latency in Threads</title>
-      <link>https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/</guid>
       <description>&lt;h1 id=&#34;introduction-to-performance--optimization-for-latency&#34;&gt;Introduction to Performance &amp;amp; Optimization for Latency&lt;/h1&gt;
 &lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a single-threaded environment, tasks are executed sequentially, meaning the total time is the sum of all tasks. We use multithreading for &lt;strong&gt;Latency Optimization&lt;/strong&gt; to break a single intensive task into smaller sub-tasks that run in parallel, reducing the wall-clock time the user has to wait for a result.&lt;/p&gt;
@@ -446,9 +446,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Introduction to Virtual Threads (Project Loom)</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Until now, we had two choices:&lt;/p&gt;
 &lt;ol&gt;
@@ -459,9 +459,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Locking Strategies &amp; Deadlocks</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;As applications grow, a single lock (like &lt;code&gt;synchronized(this)&lt;/code&gt;) becomes a bottleneck. To improve performance, we use &lt;strong&gt;Fine-Grained Locking&lt;/strong&gt; (multiple locks for different resources). However, the moment you have more than one lock, the &lt;strong&gt;Order of Acquisition&lt;/strong&gt; matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-coarse-grained-vs-fine-grained-locking&#34;&gt;2. Comparison: Coarse-Grained vs. Fine-Grained Locking&lt;/h3&gt;
@@ -502,9 +502,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Objects as Condition Variables - wait, notify, &amp; notifyAll</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/objects_asconditionvariables/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/objects_asconditionvariables/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Every Java object has an &lt;strong&gt;Intrinsic Lock&lt;/strong&gt; (the monitor). Along with that lock, every object maintains a &lt;strong&gt;Wait Set&lt;/strong&gt;—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-objects&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Objects&lt;/h3&gt;
@@ -545,27 +545,27 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Parallel Streams &amp; ForkJoinPool</title>
-      <link>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/parallelstreams__forkjoin/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/parallelstreams__forkjoin/</guid>
       <description>&lt;p&gt;This section transitions from &lt;strong&gt;IO-bound&lt;/strong&gt; concurrency (waiting for databases or networks) back to &lt;strong&gt;CPU-bound&lt;/strong&gt; efficiency. If you have a massive dataset—like 10 million rows of sales data—and you need to calculate the total tax, you don&amp;rsquo;t want to use one CPU core while the other 15 sit idle.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Modern CPUs are &amp;ldquo;Multi-core.&amp;rdquo; A standard &lt;code&gt;for&lt;/code&gt; loop or a sequential &lt;code&gt;Stream&lt;/code&gt; in Java only uses &lt;strong&gt;one&lt;/strong&gt; thread. To use all your hardware&amp;rsquo;s power, you need to split the data into chunks, process them simultaneously, and then merge the results.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Race Conditions vs. Data Races</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;A &lt;strong&gt;Race Condition&lt;/strong&gt; is a flaw in the &lt;em&gt;timing&lt;/em&gt; or &lt;em&gt;ordering&lt;/em&gt; of events that leads to incorrect program behavior. A &lt;strong&gt;Data Race&lt;/strong&gt; is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.&lt;/p&gt;
 &lt;p&gt;You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid &lt;strong&gt;both&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Recursive Task</title>
-      <link>https://Aayush987.github.io/more-advanced-topics/recursivetask/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/recursivetask/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/more-advanced-topics/recursivetask/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/recursivetask/</guid>
       <description>&lt;p&gt;While &lt;strong&gt;Parallel Streams&lt;/strong&gt; are the &amp;ldquo;automatic transmission&amp;rdquo; of the ForkJoinPool, &lt;strong&gt;&lt;code&gt;RecursiveTask&lt;/code&gt;&lt;/strong&gt; is the &amp;ldquo;manual transmission.&amp;rdquo; It gives you full control over how a large problem is sliced into smaller pieces and how those pieces are joined back together.&lt;/p&gt;
 &lt;p&gt;It is the core class you extend to implement the &lt;strong&gt;Divide and Conquer&lt;/strong&gt; strategy for tasks that return a result.&lt;/p&gt;
 &lt;hr&gt;
@@ -574,9 +574,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>ReentrantLock - tryLock &amp; Interruptibility</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;ReentrantLock&lt;/code&gt; is a manual alternative to &lt;code&gt;synchronized&lt;/code&gt;. We use it when we need to break &lt;strong&gt;Coffman&amp;rsquo;s Conditions&lt;/strong&gt; for deadlocks. Specifically:&lt;/p&gt;
 &lt;ul&gt;
@@ -626,9 +626,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>ReentrantLock - UI Application Example</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a UI application, responsiveness is king. If a background thread is performing a heavy database update or image processing, we don&amp;rsquo;t want the UI to &amp;ldquo;hang&amp;rdquo; while waiting for that data. &lt;code&gt;ReentrantLock&lt;/code&gt; with &lt;code&gt;tryLock()&lt;/code&gt; allows the UI thread to check: &lt;em&gt;&amp;ldquo;Is the data ready? No? Okay, I&amp;rsquo;ll keep the loading spinner spinning and try again in the next frame.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-blocking-vs-non-blocking-ui&#34;&gt;2. Comparison: Blocking vs. Non-Blocking UI&lt;/h3&gt;
@@ -664,9 +664,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>ReentrantReadWriteLock &amp; Database Implementation</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Standard locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) are &lt;strong&gt;Mutual Exclusion&lt;/strong&gt; locks—they don&amp;rsquo;t care if a thread is reading or writing; they block everyone else.
 &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &amp;ldquo;Mutual Exclusion&amp;rdquo; when a thread needs to &lt;strong&gt;write&lt;/strong&gt; (modify) the data.&lt;/p&gt;
@@ -708,9 +708,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Resource Sharing &amp; Critical Sections (Deep Dive)</title>
-      <link>https://Aayush987.github.io/data-sharing-between-threads/resourcesharing_introtocriticalsection/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/resourcesharing_introtocriticalsection/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/data-sharing-between-threads/resourcesharing_introtocriticalsection/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/resourcesharing_introtocriticalsection/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In multithreading, a &lt;strong&gt;Critical Section&lt;/strong&gt; is any segment of code that accesses a shared resource (like a variable, a file, or a database connection) where at least one thread is performing a &lt;strong&gt;write&lt;/strong&gt; operation.&lt;/p&gt;
 &lt;p&gt;The problem is that most high-level operations (like &lt;code&gt;count++&lt;/code&gt;) are not &lt;strong&gt;atomic&lt;/strong&gt;. To the CPU, &lt;code&gt;count++&lt;/code&gt; is actually three distinct steps:&lt;/p&gt;
@@ -723,9 +723,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Semaphore - Scalable Producer-Consumer</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/semaphore/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/semaphore/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/semaphore/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/semaphore/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;A standard &lt;code&gt;Mutex&lt;/code&gt; or &lt;code&gt;synchronized&lt;/code&gt; block only allows &lt;strong&gt;one&lt;/strong&gt; thread at a time. A &lt;strong&gt;Semaphore&lt;/strong&gt;, however, maintains a set of &lt;strong&gt;permits&lt;/strong&gt;.&lt;/p&gt;
 &lt;ul&gt;
@@ -770,9 +770,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Stack vs. Heap Memory Regions</title>
-      <link>https://Aayush987.github.io/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a multithreaded application, we need to know where data lives to understand its visibility. If data is on the &lt;strong&gt;Stack&lt;/strong&gt;, it is private and safe. If data is on the &lt;strong&gt;Heap&lt;/strong&gt;, it is shared and potentially dangerous. This distinction determines whether we need synchronization (locks/mutexes) or if the code is &amp;ldquo;thread-safe&amp;rdquo; by design.&lt;/p&gt;
 &lt;h3 id=&#34;2-visual-logic&#34;&gt;2. Visual Logic&lt;/h3&gt;
@@ -780,9 +780,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>The 4 Conditions for Deadlock (Coffman’s Conditions)</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/deadlockcondition/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/deadlockcondition/</guid>
       <description>&lt;h3 id=&#34;1-mutual-exclusion&#34;&gt;1. Mutual Exclusion&lt;/h3&gt;
 &lt;p&gt;Only one thread can have exclusive access to a resource at any given time. If a second thread tries to access that resource, it must wait until the first thread releases it.&lt;/p&gt;
 &lt;ul&gt;
@@ -793,9 +793,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Thread Per Task / Thread Per Request Model</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a standard web application, a &amp;ldquo;task&amp;rdquo; is usually a single HTTP request.&lt;/p&gt;
 &lt;ul&gt;
@@ -840,9 +840,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>UseCase Scenario For Reentrant &amp; ReentrantReadWrite Lock</title>
-      <link>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
       <description>&lt;p&gt;The choice between a standard &lt;strong&gt;ReentrantLock&lt;/strong&gt; and a &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; usually comes down to one metric: the &lt;strong&gt;Read-to-Write ratio&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;If your threads are mostly looking at data without changing it, a standard lock creates a massive, unnecessary bottleneck. If your threads are constantly updating data, the overhead of a ReadWriteLock actually makes it slower than a simple lock.&lt;/p&gt;
 &lt;hr&gt;
@@ -851,9 +851,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Virtual Threads - Best Practices</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
       <description>&lt;h3 id=&#34;1-dont-pool-virtual-threads&#34;&gt;1. Don&amp;rsquo;t Pool Virtual Threads&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;The Old Rule:&lt;/strong&gt; Threads are expensive; create a &lt;code&gt;FixedThreadPool&lt;/code&gt; and reuse them.
 &lt;strong&gt;The New Rule:&lt;/strong&gt; Virtual threads are disposable objects. Create a new one for every single task.&lt;/p&gt;
@@ -873,9 +873,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Virtual Threads - Deep Dive</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
       <description>&lt;p&gt;To understand what Virtual Threads do under the hood, we have to look at the &amp;ldquo;Magic&amp;rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.&lt;/p&gt;
 &lt;p&gt;Before Java 21, a &lt;strong&gt;Java Thread&lt;/strong&gt; was just a thin wrapper around an &lt;strong&gt;OS Thread&lt;/strong&gt;. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-architecture-mn-scheduling&#34;&gt;1. The Architecture: M:N Scheduling&lt;/h3&gt;
@@ -883,9 +883,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Joining Threads</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/joining-threads/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/joining-threads/</guid>
       <description>&lt;h1 id=&#34;thread-coordination---part-2-joining-threads&#34;&gt;Thread Coordination - Part 2: Joining Threads&lt;/h1&gt;
 &lt;h2 id=&#34;1-the-problem-the-race-to-the-finish&#34;&gt;1. The Problem: The &amp;ldquo;Race&amp;rdquo; to the Finish&lt;/h2&gt;
 &lt;p&gt;When you start a thread, it runs independently. If the &lt;code&gt;main&lt;/code&gt; thread needs the result of &lt;code&gt;Thread-A&lt;/code&gt; to perform a calculation, &lt;code&gt;main&lt;/code&gt; might finish before &lt;code&gt;Thread-A&lt;/code&gt; even starts, leading to &lt;code&gt;null&lt;/code&gt; results or crashes.&lt;/p&gt;
@@ -895,9 +895,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Thread Inheritance</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-inheritance/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-inheritance/</guid>
       <description>&lt;h1 id=&#34;thread-creation---part-2-thread-inheritance&#34;&gt;Thread Creation - Part 2: Thread Inheritance&lt;/h1&gt;
 &lt;h2 id=&#34;1-the-concept-extending-the-thread-class&#34;&gt;1. The Concept: Extending the Thread Class&lt;/h2&gt;
 &lt;p&gt;Instead of passing a &lt;code&gt;Runnable&lt;/code&gt; object to a new Thread instance, we create a specialized class that &lt;strong&gt;is&lt;/strong&gt; a Thread. This is done using the &lt;code&gt;extends&lt;/code&gt; keyword.&lt;/p&gt;
@@ -911,9 +911,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Thread Introduction</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-introduction/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-introduction/</guid>
       <description>&lt;h1 id=&#34;thread-creation-part-1-capabilites--debugging&#34;&gt;Thread Creation Part 1 Capabilites &amp;amp; Debugging&lt;/h1&gt;
 &lt;h2 id=&#34;1-core-concept-thread-vs-process&#34;&gt;1. Core Concept: Thread vs. Process&lt;/h2&gt;
 &lt;p&gt;Before diving into code, it is vital to understand the &amp;ldquo;Container&amp;rdquo; relationship:&lt;/p&gt;
@@ -927,9 +927,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Thread Termination &amp; Daemon Threads</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
       <description>&lt;h1 id=&#34;thread-termination--daemon-threads&#34;&gt;Thread Termination &amp;amp; Daemon Threads&lt;/h1&gt;
 &lt;h2 id=&#34;1-why-is-termination-tricky&#34;&gt;1. Why is Termination Tricky?&lt;/h2&gt;
 &lt;p&gt;Threads consume resources (Memory, CPU, File Handles). If a thread finishes its task but stays alive, it&amp;rsquo;s a &lt;strong&gt;Resource Leak&lt;/strong&gt;.&lt;/p&gt;
@@ -945,9 +945,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title></title>
-      <link>https://Aayush987.github.io/performance-optimization/optimization_forlatency_imageoptimization/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/optimization_forlatency_imageoptimization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/performance-optimization/optimization_forlatency_imageoptimization/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/optimization_forlatency_imageoptimization/</guid>
       <description></description>
     </item>
   </channel>

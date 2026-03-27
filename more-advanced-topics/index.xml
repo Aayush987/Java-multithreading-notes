@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>More Advanced Topics on Study Notes</title>
-    <link>https://Aayush987.github.io/more-advanced-topics/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/</link>
     <description>Recent content in More Advanced Topics on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/more-advanced-topics/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Parallel Streams &amp; ForkJoinPool</title>
-      <link>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/parallelstreams__forkjoin/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/parallelstreams__forkjoin/</guid>
       <description>&lt;p&gt;This section transitions from &lt;strong&gt;IO-bound&lt;/strong&gt; concurrency (waiting for databases or networks) back to &lt;strong&gt;CPU-bound&lt;/strong&gt; efficiency. If you have a massive dataset—like 10 million rows of sales data—and you need to calculate the total tax, you don&amp;rsquo;t want to use one CPU core while the other 15 sit idle.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Modern CPUs are &amp;ldquo;Multi-core.&amp;rdquo; A standard &lt;code&gt;for&lt;/code&gt; loop or a sequential &lt;code&gt;Stream&lt;/code&gt; in Java only uses &lt;strong&gt;one&lt;/strong&gt; thread. To use all your hardware&amp;rsquo;s power, you need to split the data into chunks, process them simultaneously, and then merge the results.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Recursive Task</title>
-      <link>https://Aayush987.github.io/more-advanced-topics/recursivetask/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/recursivetask/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/more-advanced-topics/recursivetask/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/recursivetask/</guid>
       <description>&lt;p&gt;While &lt;strong&gt;Parallel Streams&lt;/strong&gt; are the &amp;ldquo;automatic transmission&amp;rdquo; of the ForkJoinPool, &lt;strong&gt;&lt;code&gt;RecursiveTask&lt;/code&gt;&lt;/strong&gt; is the &amp;ldquo;manual transmission.&amp;rdquo; It gives you full control over how a large problem is sliced into smaller pieces and how those pieces are joined back together.&lt;/p&gt;
 &lt;p&gt;It is the core class you extend to implement the &lt;strong&gt;Divide and Conquer&lt;/strong&gt; strategy for tasks that return a result.&lt;/p&gt;
 &lt;hr&gt;

@@ -11,16 +11,16 @@
 In the previous &ldquo;Thread-per-Task&rdquo; model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time &ldquo;Context Switching&rdquo; (saving the state of Thread 1 to load Thread 2). This is inefficient.
 The Thread-per-Core Goal: Create exactly one thread for every physical CPU core. These threads never block. If a thread needs to read from a socket and the data isn&rsquo;t there, it doesn&rsquo;t sleep; it moves to the next socket immediately.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
 <noscript>
     <style>
         #theme-toggle,
@@ -72,7 +72,7 @@ The Thread-per-Core Goal: Create exactly one thread for every physical CPU core.
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Asynchronous, Non-Blocking IO - Thread-per-Core">
   <meta property="og:description" content="1. The “Why” In the previous “Thread-per-Task” model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time “Context Switching” (saving the state of Thread 1 to load Thread 2). This is inefficient.
@@ -98,13 +98,13 @@ The Thread-per-Core Goal: Create exactly one thread for every physical CPU core.
       "@type": "ListItem",
       "position":  1 ,
       "name": "Threading Models For High Performance IO",
-      "item": "https://Aayush987.github.io/threading-models-for-high-performance-io/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Asynchronous, Non-Blocking IO - Thread-per-Core",
-      "item": "https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/"
     }
   ]
 }
@@ -126,14 +126,14 @@ The Thread-per-Core Goal: Create exactly one thread for every physical CPU core.
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -143,7 +143,7 @@ The Thread-per-Core Goal: Create exactly one thread for every physical CPU core.
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -296,7 +296,7 @@ The Thread-per-Core Goal: Create exactly one thread for every physical CPU core.
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

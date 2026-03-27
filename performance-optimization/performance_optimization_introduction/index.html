@@ -13,16 +13,16 @@ In a single-threaded environment, tasks are executed sequentially, meaning the t
 2. Visual Logic
 The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&rdquo; execution. If a task can be decomposed, we distribute the workload across multiple CPU cores.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/">
 <noscript>
     <style>
         #theme-toggle,
@@ -74,7 +74,7 @@ The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&r
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Introduction to Performance & Optimization for Latency in Threads">
   <meta property="og:description" content="Introduction to Performance &amp; Optimization for Latency 1. The “Why” In a single-threaded environment, tasks are executed sequentially, meaning the total time is the sum of all tasks. We use multithreading for Latency Optimization to break a single intensive task into smaller sub-tasks that run in parallel, reducing the wall-clock time the user has to wait for a result.
@@ -100,13 +100,13 @@ The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&r
       "@type": "ListItem",
       "position":  1 ,
       "name": "Performance Optimization",
-      "item": "https://Aayush987.github.io/performance-optimization/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/performance-optimization/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Introduction to Performance \u0026 Optimization for Latency in Threads",
-      "item": "https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/"
     }
   ]
 }
@@ -128,14 +128,14 @@ The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&r
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -145,7 +145,7 @@ The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&r
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -237,7 +237,7 @@ The goal is to move from a &ldquo;Serial&rdquo; execution to a &ldquo;Parallel&r
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

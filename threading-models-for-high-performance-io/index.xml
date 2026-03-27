@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Threading Models For High Performance IO on Study Notes</title>
-    <link>https://Aayush987.github.io/threading-models-for-high-performance-io/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/</link>
     <description>Recent content in Threading Models For High Performance IO on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/threading-models-for-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Asynchronous, Non-Blocking IO - Thread-per-Core</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In the previous &amp;ldquo;Thread-per-Task&amp;rdquo; model, if you have 8 CPU cores, but 1,000 threads, the CPU spends most of its time &amp;ldquo;Context Switching&amp;rdquo; (saving the state of Thread 1 to load Thread 2). This is inefficient.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;The Thread-per-Core Goal:&lt;/strong&gt; Create exactly one thread for every physical CPU core. These threads &lt;strong&gt;never block&lt;/strong&gt;. If a thread needs to read from a socket and the data isn&amp;rsquo;t there, it doesn&amp;rsquo;t sleep; it moves to the next socket immediately.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Introduction to Blocking IO</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Blocking IO&lt;/strong&gt; is the &amp;ldquo;classic&amp;rdquo; way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.&lt;/p&gt;
 &lt;ul&gt;
@@ -65,9 +65,9 @@
     </item>
     <item>
       <title>Thread Per Task / Thread Per Request Model</title>
-      <link>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a standard web application, a &amp;ldquo;task&amp;rdquo; is usually a single HTTP request.&lt;/p&gt;
 &lt;ul&gt;

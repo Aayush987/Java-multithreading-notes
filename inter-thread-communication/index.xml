@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Inter Thread Coordination on Study Notes</title>
-    <link>https://Aayush987.github.io/inter-thread-communication/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/</link>
     <description>Recent content in Inter Thread Coordination on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/inter-thread-communication/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Condition Variables - Inter-Thread Communication</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/condition_variables/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/condition_variables/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/condition_variables/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/condition_variables/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Sometimes a thread has the lock but cannot proceed because the data isn&amp;rsquo;t ready (e.g., a Consumer finds an empty queue).&lt;/p&gt;
 &lt;ul&gt;
@@ -57,9 +57,9 @@
     </item>
     <item>
       <title>Objects as Condition Variables - wait, notify, &amp; notifyAll</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/objects_asconditionvariables/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/objects_asconditionvariables/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Every Java object has an &lt;strong&gt;Intrinsic Lock&lt;/strong&gt; (the monitor). Along with that lock, every object maintains a &lt;strong&gt;Wait Set&lt;/strong&gt;—a list of threads that are suspended and waiting for a signal related to that object. This allows threads to communicate without using complex external libraries, using only the objects they are already synchronizing on.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-waitnotify-vs-condition-objects&#34;&gt;2. Comparison: &lt;code&gt;wait/notify&lt;/code&gt; vs. &lt;code&gt;Condition&lt;/code&gt; Objects&lt;/h3&gt;
@@ -100,9 +100,9 @@
     </item>
     <item>
       <title>Semaphore - Scalable Producer-Consumer</title>
-      <link>https://Aayush987.github.io/inter-thread-communication/semaphore/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/semaphore/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/inter-thread-communication/semaphore/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/semaphore/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;A standard &lt;code&gt;Mutex&lt;/code&gt; or &lt;code&gt;synchronized&lt;/code&gt; block only allows &lt;strong&gt;one&lt;/strong&gt; thread at a time. A &lt;strong&gt;Semaphore&lt;/strong&gt;, however, maintains a set of &lt;strong&gt;permits&lt;/strong&gt;.&lt;/p&gt;
 &lt;ul&gt;

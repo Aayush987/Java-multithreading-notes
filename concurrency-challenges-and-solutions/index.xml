@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Concurrency Challenges &amp; Solutions on Study Notes</title>
-    <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/</link>
     <description>Recent content in Concurrency Challenges &amp; Solutions on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/concurrency-challenges-and-solutions/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Atomic Operations, Volatile, &amp; Metrics</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Traditional locking (&lt;code&gt;synchronized&lt;/code&gt;) is &amp;ldquo;heavy.&amp;rdquo; It involves suspending threads, context switching, and OS overhead. &lt;strong&gt;Atomic Operations&lt;/strong&gt; allow us to perform &amp;ldquo;Read-Modify-Write&amp;rdquo; cycles as a single, uninterruptible unit at the hardware level. The &lt;code&gt;volatile&lt;/code&gt; keyword ensures that changes made by one thread are immediately visible to others, preventing &amp;ldquo;stale data&amp;rdquo; bugs caused by CPU caching.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-volatile-vs-atomic-vs-synchronized&#34;&gt;2. Comparison: Volatile vs. Atomic vs. Synchronized&lt;/h3&gt;
@@ -58,9 +58,9 @@
     </item>
     <item>
       <title>Critical Section &amp; Synchronization</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/criticalsection_synchronization/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/criticalsection_synchronization/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;We need a way to make a sequence of operations &lt;strong&gt;Atomic&lt;/strong&gt; (all-or-nothing). Since the CPU can interrupt a thread at any micro-instruction, we use &lt;strong&gt;Mutual Exclusion (Mutex)&lt;/strong&gt;. This ensures that if Thread A is halfway through an update, Thread B is physically blocked from starting that same update until Thread A finishes.&lt;/p&gt;
 &lt;h3 id=&#34;2-visual-logic-the-monitorlock-concept&#34;&gt;2. Visual Logic: The Monitor/Lock Concept&lt;/h3&gt;
@@ -68,9 +68,9 @@
     </item>
     <item>
       <title>Deep Dive- Synchronization in Action</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;We use synchronization to prevent &lt;strong&gt;Data Corruption&lt;/strong&gt;. Without it, two threads can &amp;ldquo;read&amp;rdquo; the same initial value, perform an operation, and &amp;ldquo;write&amp;rdquo; back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).&lt;/p&gt;
 &lt;h3 id=&#34;2-detailed-code-explanation&#34;&gt;2. Detailed Code Explanation&lt;/h3&gt;
@@ -103,9 +103,9 @@
     </item>
     <item>
       <title>Locking Strategies &amp; Deadlocks</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;As applications grow, a single lock (like &lt;code&gt;synchronized(this)&lt;/code&gt;) becomes a bottleneck. To improve performance, we use &lt;strong&gt;Fine-Grained Locking&lt;/strong&gt; (multiple locks for different resources). However, the moment you have more than one lock, the &lt;strong&gt;Order of Acquisition&lt;/strong&gt; matters. If two threads try to acquire the same two locks in a different order, they can end up in a Deadlock.&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-coarse-grained-vs-fine-grained-locking&#34;&gt;2. Comparison: Coarse-Grained vs. Fine-Grained Locking&lt;/h3&gt;
@@ -146,18 +146,18 @@
     </item>
     <item>
       <title>Race Conditions vs. Data Races</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/racecondition__dataraces/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/racecondition__dataraces/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;A &lt;strong&gt;Race Condition&lt;/strong&gt; is a flaw in the &lt;em&gt;timing&lt;/em&gt; or &lt;em&gt;ordering&lt;/em&gt; of events that leads to incorrect program behavior. A &lt;strong&gt;Data Race&lt;/strong&gt; is a technical memory issue where two threads access the same memory location concurrently, and at least one access is a write, without any synchronization.&lt;/p&gt;
 &lt;p&gt;You can have a Race Condition without a Data Race, and a Data Race without a Race Condition. You want to avoid &lt;strong&gt;both&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     <item>
       <title>The 4 Conditions for Deadlock (Coffman’s Conditions)</title>
-      <link>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/deadlockcondition/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/deadlockcondition/</guid>
       <description>&lt;h3 id=&#34;1-mutual-exclusion&#34;&gt;1. Mutual Exclusion&lt;/h3&gt;
 &lt;p&gt;Only one thread can have exclusive access to a resource at any given time. If a second thread tries to access that resource, it must wait until the first thread releases it.&lt;/p&gt;
 &lt;ul&gt;

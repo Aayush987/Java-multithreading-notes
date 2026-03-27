@@ -48,16 +48,16 @@ The Problem: If you have 1,000 users and each requires a blocking thread, you ne
 3. The &ldquo;Golden&rdquo; Snippet: The Standard Blocking Server
 This is a classic &ldquo;One Thread Per Connection&rdquo; model. It works fine for a few users, but it scales poorly.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/">
 <noscript>
     <style>
         #theme-toggle,
@@ -109,7 +109,7 @@ This is a classic &ldquo;One Thread Per Connection&rdquo; model. It works fine f
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Introduction to Blocking IO">
   <meta property="og:description" content="1. The “Why” Blocking IO is the “classic” way of handling data. When a thread asks the Operating System (OS) for data (like reading a 1GB file or waiting for a network packet), the OS puts that thread to sleep. The thread cannot do any other work until the data arrives.
@@ -135,13 +135,13 @@ The Problem: If you have 1,000 users and each requires a blocking thread, you ne
       "@type": "ListItem",
       "position":  1 ,
       "name": "Threading Models For High Performance IO",
-      "item": "https://Aayush987.github.io/threading-models-for-high-performance-io/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Introduction to Blocking IO",
-      "item": "https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/"
     }
   ]
 }
@@ -163,14 +163,14 @@ The Problem: If you have 1,000 users and each requires a blocking thread, you ne
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -180,7 +180,7 @@ The Problem: If you have 1,000 users and each requires a blocking thread, you ne
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -319,7 +319,7 @@ The Problem: If you have 1,000 users and each requires a blocking thread, you ne
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

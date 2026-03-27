@@ -2,148 +2,148 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-creation/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-coordination/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/lockfree-algorithms/atomicreferencescompareandsetexamples/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferencescompareandsetexamples/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/advanced-locking/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/asynchronous_nonblockingio_withthreadpercode_model/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/lockfree-algorithms/atomicreferences__compareset/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicreferences__compareset/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/inter-thread-communication/condition_variables/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/condition_variables/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/criticalsection_synchronization/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/criticalsection_synchronization/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/data-sharing-between-threads/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/inter-thread-communication/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/threading-models-for-high-performance-io/introduction_to_blockingio/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/introduction_to_blockingio/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/performance-optimization/performance_optimization_introduction/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/performance_optimization_introduction/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/lockfree-algorithms/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/lockingstrategies__deadlock/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/more-advanced-topics/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/inter-thread-communication/objects_asconditionvariables/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/objects_asconditionvariables/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/more-advanced-topics/parallelstreams__forkjoin/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/parallelstreams__forkjoin/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/performance-optimization/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/racecondition__dataraces/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/racecondition__dataraces/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/more-advanced-topics/recursivetask/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/more-advanced-topics/recursivetask/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlock/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlockuiexample/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantreadwritelock/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/data-sharing-between-threads/resourcesharing_introtocriticalsection/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/resourcesharing_introtocriticalsection/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/inter-thread-communication/semaphore/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/inter-thread-communication/semaphore/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/data-sharing-between-threads/datasharing_betweenthreads_stackandheapregions/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/concurrency-challenges-and-solutions/deadlockcondition/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/deadlockcondition/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/threadpertask__threadperrequest_model/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/threading-models-for-high-performance-io/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/threading-models-for-high-performance-io/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/virtual-threads-and-high-performance-io/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/</loc>
     <lastmod>2026-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/joining-threads/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-inheritance/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-inheritance/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-creation/thread-introduction/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-creation/thread-introduction/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</loc>
     <lastmod>2026-03-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://Aayush987.github.io/performance-optimization/optimization_forlatency_imageoptimization/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/performance-optimization/optimization_forlatency_imageoptimization/</loc>
   </url><url>
-    <loc>https://Aayush987.github.io/categories/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/categories/</loc>
   </url><url>
-    <loc>https://Aayush987.github.io/tags/</loc>
+    <loc>https://aayush987.github.io/Java-multithreading-notes/tags/</loc>
   </url>
 </urlset>

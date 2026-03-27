@@ -56,16 +56,16 @@ Lock-Free operations use hardware-level atomic instructions to ensure that at le
 3. The &ldquo;Golden&rdquo; Snippet: Atomic Compare-And-Swap (CAS)
 The heart of every lock-free algorithm is the CAS operation. It is a single CPU instruction that says: &ldquo;If the value in memory is X, change it to Y. If it&rsquo;s not X anymore, don&rsquo;t do anything and tell me I failed.&rdquo;">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/">
 <noscript>
     <style>
         #theme-toggle,
@@ -117,7 +117,7 @@ The heart of every lock-free algorithm is the CAS operation. It is a single CPU 
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Introduction to Non-Blocking & Lock-Free Operations">
   <meta property="og:description" content="1. The “Why” Traditional locks (synchronized, ReentrantLock) have major downsides:
@@ -145,13 +145,13 @@ Deadlocks: Threads waiting for each other forever. Priority Inversion: A low-pri
       "@type": "ListItem",
       "position":  1 ,
       "name": "LockFree Algorithms \u0026 Data Structures",
-      "item": "https://Aayush987.github.io/lockfree-algorithms/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Introduction to Non-Blocking \u0026 Lock-Free Operations",
-      "item": "https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/"
     }
   ]
 }
@@ -173,14 +173,14 @@ Deadlocks: Threads waiting for each other forever. Priority Inversion: A low-pri
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/lockfree-algorithms/intro_to_lockfree_nonblocking/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/intro_to_lockfree_nonblocking/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -190,7 +190,7 @@ Deadlocks: Threads waiting for each other forever. Priority Inversion: A low-pri
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -334,7 +334,7 @@ Deadlocks: Threads waiting for each other forever. Priority Inversion: A low-pri
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

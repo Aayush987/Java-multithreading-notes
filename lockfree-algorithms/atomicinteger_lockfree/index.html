@@ -49,16 +49,16 @@ The Atomic Solution: AtomicInteger uses the CPU&rsquo;s native ability to &ldquo
 3. The &ldquo;Golden&rdquo; Snippet: High-Traffic Inventory
 This example simulates a flash sale where multiple threads attempt to decrease stock. It ensures we never sell more items than we have (Overselling) without using a single synchronized block.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/">
 <noscript>
     <style>
         #theme-toggle,
@@ -110,7 +110,7 @@ This example simulates a flash sale where multiple threads attempt to decrease s
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Atomic Integers & Lock-Free E-commerce">
   <meta property="og:description" content="1. The “Why” In an e-commerce platform, the “Inventory Count” is the most contested variable.
@@ -136,13 +136,13 @@ The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,
       "@type": "ListItem",
       "position":  1 ,
       "name": "LockFree Algorithms \u0026 Data Structures",
-      "item": "https://Aayush987.github.io/lockfree-algorithms/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Atomic Integers \u0026 Lock-Free E-commerce",
-      "item": "https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/"
     }
   ]
 }
@@ -164,14 +164,14 @@ The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/lockfree-algorithms/atomicinteger_lockfree/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/lockfree-algorithms/atomicinteger_lockfree/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -181,7 +181,7 @@ The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -319,7 +319,7 @@ The Problem with Locks: If 10,000 users try to buy an item, synchronized puts 9,
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Thread Coordination on Study Notes</title>
-    <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/</link>
     <description>Recent content in Thread Coordination on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 26 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/thread-fundamentals/thread-coordination/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Joining Threads</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/joining-threads/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/joining-threads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/joining-threads/</guid>
       <description>&lt;h1 id=&#34;thread-coordination---part-2-joining-threads&#34;&gt;Thread Coordination - Part 2: Joining Threads&lt;/h1&gt;
 &lt;h2 id=&#34;1-the-problem-the-race-to-the-finish&#34;&gt;1. The Problem: The &amp;ldquo;Race&amp;rdquo; to the Finish&lt;/h2&gt;
 &lt;p&gt;When you start a thread, it runs independently. If the &lt;code&gt;main&lt;/code&gt; thread needs the result of &lt;code&gt;Thread-A&lt;/code&gt; to perform a calculation, &lt;code&gt;main&lt;/code&gt; might finish before &lt;code&gt;Thread-A&lt;/code&gt; even starts, leading to &lt;code&gt;null&lt;/code&gt; results or crashes.&lt;/p&gt;
@@ -22,9 +22,9 @@
     </item>
     <item>
       <title>Thread Termination &amp; Daemon Threads</title>
-      <link>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</link>
       <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/thread-coordination/thread_termination_and_daemon_threads/</guid>
       <description>&lt;h1 id=&#34;thread-termination--daemon-threads&#34;&gt;Thread Termination &amp;amp; Daemon Threads&lt;/h1&gt;
 &lt;h2 id=&#34;1-why-is-termination-tricky&#34;&gt;1. Why is Termination Tricky?&lt;/h2&gt;
 &lt;p&gt;Threads consume resources (Memory, CPU, File Handles). If a thread finishes its task but stays alive, it&amp;rsquo;s a &lt;strong&gt;Resource Leak&lt;/strong&gt;.&lt;/p&gt;

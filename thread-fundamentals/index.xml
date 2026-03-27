@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Multithreading Fundamentals on Study Notes</title>
-    <link>https://Aayush987.github.io/thread-fundamentals/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/</link>
     <description>Recent content in Multithreading Fundamentals on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate></lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/thread-fundamentals/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/thread-fundamentals/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

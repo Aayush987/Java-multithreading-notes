@@ -37,16 +37,16 @@ The Hand-off: The JVM wakes up Thread B. Thread B now acquires the monitor and s
 3. Finer-Grained Synchronization (The Block)
 Sometimes, synchronizing an entire method is overkill. If your method is 100 lines long, but only 1 line touches the shared variable, you should use a Synchronized Block.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/">
 <noscript>
     <style>
         #theme-toggle,
@@ -98,7 +98,7 @@ Sometimes, synchronizing an entire method is overkill. If your method is 100 lin
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Deep Dive- Synchronization in Action">
   <meta property="og:description" content="1. The “Why” We use synchronization to prevent Data Corruption. Without it, two threads can “read” the same initial value, perform an operation, and “write” back their results, effectively overwriting each other. Synchronization forces these operations to happen one after the other (Sequentially) rather than at the same time (Concurrently).
@@ -126,13 +126,13 @@ public class Counter { private int count = 0; // The &#39;synchronized&#39; keyw
       "@type": "ListItem",
       "position":  1 ,
       "name": "Concurrency Challenges \u0026 Solutions",
-      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Deep Dive- Synchronization in Action",
-      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/"
     }
   ]
 }
@@ -154,14 +154,14 @@ public class Counter { private int count = 0; // The &#39;synchronized&#39; keyw
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/concurrency-challenges-and-solutions/synchronization_in_detail/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/synchronization_in_detail/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -171,7 +171,7 @@ public class Counter { private int count = 0; // The &#39;synchronized&#39; keyw
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -309,7 +309,7 @@ public class Counter { private int count = 0; // The &#39;synchronized&#39; keyw
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by

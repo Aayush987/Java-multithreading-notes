@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Advanced Locking on Study Notes</title>
-    <link>https://Aayush987.github.io/advanced-locking/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/</link>
     <description>Recent content in Advanced Locking on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/advanced-locking/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/advanced-locking/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ReentrantLock - tryLock &amp; Interruptibility</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;&lt;code&gt;ReentrantLock&lt;/code&gt; is a manual alternative to &lt;code&gt;synchronized&lt;/code&gt;. We use it when we need to break &lt;strong&gt;Coffman&amp;rsquo;s Conditions&lt;/strong&gt; for deadlocks. Specifically:&lt;/p&gt;
 &lt;ul&gt;
@@ -62,9 +62,9 @@
     </item>
     <item>
       <title>ReentrantLock - UI Application Example</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlockuiexample/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantlockuiexample/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In a UI application, responsiveness is king. If a background thread is performing a heavy database update or image processing, we don&amp;rsquo;t want the UI to &amp;ldquo;hang&amp;rdquo; while waiting for that data. &lt;code&gt;ReentrantLock&lt;/code&gt; with &lt;code&gt;tryLock()&lt;/code&gt; allows the UI thread to check: &lt;em&gt;&amp;ldquo;Is the data ready? No? Okay, I&amp;rsquo;ll keep the loading spinner spinning and try again in the next frame.&amp;rdquo;&lt;/em&gt;&lt;/p&gt;
 &lt;h3 id=&#34;2-comparison-blocking-vs-non-blocking-ui&#34;&gt;2. Comparison: Blocking vs. Non-Blocking UI&lt;/h3&gt;
@@ -100,9 +100,9 @@
     </item>
     <item>
       <title>ReentrantReadWriteLock &amp; Database Implementation</title>
-      <link>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantreadwritelock/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/advancedlocking_reentrantreadwritelock/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Standard locks (&lt;code&gt;synchronized&lt;/code&gt;, &lt;code&gt;ReentrantLock&lt;/code&gt;) are &lt;strong&gt;Mutual Exclusion&lt;/strong&gt; locks—they don&amp;rsquo;t care if a thread is reading or writing; they block everyone else.
 &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; recognizes that multiple threads reading the same data simultaneously is perfectly safe. It only enforces &amp;ldquo;Mutual Exclusion&amp;rdquo; when a thread needs to &lt;strong&gt;write&lt;/strong&gt; (modify) the data.&lt;/p&gt;
@@ -144,9 +144,9 @@
     </item>
     <item>
       <title>UseCase Scenario For Reentrant &amp; ReentrantReadWrite Lock</title>
-      <link>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/advanced-locking/usecasescenario_for_reentrant__reentrantreadwrite/</guid>
       <description>&lt;p&gt;The choice between a standard &lt;strong&gt;ReentrantLock&lt;/strong&gt; and a &lt;strong&gt;ReentrantReadWriteLock&lt;/strong&gt; usually comes down to one metric: the &lt;strong&gt;Read-to-Write ratio&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;If your threads are mostly looking at data without changing it, a standard lock creates a massive, unnecessary bottleneck. If your threads are constantly updating data, the overhead of a ReadWriteLock actually makes it slower than a simple lock.&lt;/p&gt;
 &lt;hr&gt;

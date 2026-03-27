@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Virtual Threads and High Performance IOs on Study Notes</title>
-    <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/</link>
+    <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/</link>
     <description>Recent content in Virtual Threads and High Performance IOs on Study Notes</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Mar 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://Aayush987.github.io/virtual-threads-and-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>High-Performance IO with Virtual Threads</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/highperformanceio_with_virtualthreads/</guid>
       <description>&lt;p&gt;This section is the culmination of everything we&amp;rsquo;ve learned about IO. It explains how &lt;strong&gt;Virtual Threads&lt;/strong&gt; allow us to write code that &lt;em&gt;looks&lt;/em&gt; like the old &amp;ldquo;Thread-per-Request&amp;rdquo; model but &lt;em&gt;performs&lt;/em&gt; like the &amp;ldquo;Asynchronous/NIO&amp;rdquo; model.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;In the previous NIO (Non-Blocking) models, we had to break our logic into &amp;ldquo;callbacks&amp;rdquo; or &amp;ldquo;promises.&amp;rdquo; This made error handling and stack traces a nightmare.
@@ -64,9 +64,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Introduction to Virtual Threads (Project Loom)</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/intro_to_virtualthreads/</guid>
       <description>&lt;h3 id=&#34;1-the-why&#34;&gt;1. The &amp;ldquo;Why&amp;rdquo;&lt;/h3&gt;
 &lt;p&gt;Until now, we had two choices:&lt;/p&gt;
 &lt;ol&gt;
@@ -77,9 +77,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Virtual Threads - Best Practices</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_bestpractices/</guid>
       <description>&lt;h3 id=&#34;1-dont-pool-virtual-threads&#34;&gt;1. Don&amp;rsquo;t Pool Virtual Threads&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;The Old Rule:&lt;/strong&gt; Threads are expensive; create a &lt;code&gt;FixedThreadPool&lt;/code&gt; and reuse them.
 &lt;strong&gt;The New Rule:&lt;/strong&gt; Virtual threads are disposable objects. Create a new one for every single task.&lt;/p&gt;
@@ -99,9 +99,9 @@ Virtual Threads change the game:&lt;/p&gt;
     </item>
     <item>
       <title>Virtual Threads - Deep Dive</title>
-      <link>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
+      <link>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</link>
       <pubDate>Fri, 27 Mar 2026 00:00:00 +0000</pubDate>
-      <guid>https://Aayush987.github.io/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
+      <guid>https://aayush987.github.io/Java-multithreading-notes/virtual-threads-and-high-performance-io/virtualthreads_deepdive/</guid>
       <description>&lt;p&gt;To understand what Virtual Threads do under the hood, we have to look at the &amp;ldquo;Magic&amp;rdquo; that happens between the Java code you write and the Operating System (OS) that actually executes it.&lt;/p&gt;
 &lt;p&gt;Before Java 21, a &lt;strong&gt;Java Thread&lt;/strong&gt; was just a thin wrapper around an &lt;strong&gt;OS Thread&lt;/strong&gt;. If you created 1,000 Java threads, the OS had to manage 1,000 stacks, which is why your memory would spike.&lt;/p&gt;
 &lt;h3 id=&#34;1-the-architecture-mn-scheduling&#34;&gt;1. The Architecture: M:N Scheduling&lt;/h3&gt;

@@ -50,16 +50,16 @@ Traditional locking (synchronized) is &ldquo;heavy.&rdquo; It involves suspendin
 3. The &ldquo;Golden&rdquo; Snippet: Performance Metrics
 Imagine a high-frequency trading app or a web server. We need to track the number of requests per second without slowing down the app with heavy locks.">
 <meta name="author" content="">
-<link rel="canonical" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://Aayush987.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://Aayush987.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://Aayush987.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://Aayush987.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://Aayush987.github.io/safari-pinned-tab.svg">
+<link rel="canonical" href="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
+<link crossorigin="anonymous" href="/Java-multithreading-notes/assets/css/stylesheet.199042e659bc7245f5609d333d6c044eb554a0640849bb874e1dff8eb0f57209.css" integrity="sha256-GZBC5lm8ckX1YJ0zPWwETrVUoGQISbuHTh3/jrD1cgk=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://aayush987.github.io/Java-multithreading-notes/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://aayush987.github.io/Java-multithreading-notes/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://aayush987.github.io/Java-multithreading-notes/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://aayush987.github.io/Java-multithreading-notes/apple-touch-icon.png">
+<link rel="mask-icon" href="https://aayush987.github.io/Java-multithreading-notes/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
+<link rel="alternate" hreflang="en" href="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
 <noscript>
     <style>
         #theme-toggle,
@@ -111,7 +111,7 @@ Imagine a high-frequency trading app or a web server. We need to track the numbe
         document.querySelector("html").dataset.theme = 'light';
     }
 
-</script><meta property="og:url" content="https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
+</script><meta property="og:url" content="https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/">
   <meta property="og:site_name" content="Study Notes">
   <meta property="og:title" content="Atomic Operations, Volatile, & Metrics">
   <meta property="og:description" content="1. The “Why” Traditional locking (synchronized) is “heavy.” It involves suspending threads, context switching, and OS overhead. Atomic Operations allow us to perform “Read-Modify-Write” cycles as a single, uninterruptible unit at the hardware level. The volatile keyword ensures that changes made by one thread are immediately visible to others, preventing “stale data” bugs caused by CPU caching.
@@ -137,13 +137,13 @@ Imagine a high-frequency trading app or a web server. We need to track the numbe
       "@type": "ListItem",
       "position":  1 ,
       "name": "Concurrency Challenges \u0026 Solutions",
-      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Atomic Operations, Volatile, \u0026 Metrics",
-      "item": "https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/"
+      "item": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/"
     }
   ]
 }
@@ -165,14 +165,14 @@ Imagine a high-frequency trading app or a web server. We need to track the numbe
   "dateModified": "2026-03-27T00:00:00Z",
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "https://Aayush987.github.io/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/"
+    "@id": "https://aayush987.github.io/Java-multithreading-notes/concurrency-challenges-and-solutions/atomicoperations_volatile_metrics/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Study Notes",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://Aayush987.github.io/favicon.ico"
+      "url": "https://aayush987.github.io/Java-multithreading-notes/favicon.ico"
     }
   }
 }
@@ -182,7 +182,7 @@ Imagine a high-frequency trading app or a web server. We need to track the numbe
     <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://Aayush987.github.io/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
+            <a href="https://aayush987.github.io/Java-multithreading-notes/" accesskey="h" title="Study Notes (Alt + H)">Study Notes</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -320,7 +320,7 @@ Imagine a high-frequency trading app or a web server. We need to track the numbe
     </main>
     
 <footer class="footer">
-        <span>&copy; 2026 <a href="https://Aayush987.github.io/">Study Notes</a></span> · 
+        <span>&copy; 2026 <a href="https://aayush987.github.io/Java-multithreading-notes/">Study Notes</a></span> · 
 
     <span>
         Powered by
